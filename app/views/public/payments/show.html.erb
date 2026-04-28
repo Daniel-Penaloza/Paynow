@@ -1,0 +1,164 @@
+<% content_for :title, @business.name %>
+
+<div class="min-h-dvh flex items-start justify-center px-4 py-10">
+  <div class="w-full max-w-[420px] space-y-5">
+
+    <%# ── Encabezado del negocio ─────────────────────── %>
+    <div class="animate-up text-center pt-4 pb-2">
+      <div class="inline-flex items-center gap-2 mb-6">
+        <svg width="28" height="28" viewBox="0 0 38 38" fill="none">
+          <rect width="38" height="38" rx="10" fill="#6366f1"/>
+          <path d="M22 8l-8 13h6l-2 9 12-15h-7l3-7z" fill="white"/>
+        </svg>
+        <span class="font-extrabold tracking-[-0.04em] text-slate-100">
+          Pay<em class="not-italic text-[#6366f1]">Now</em>
+        </span>
+      </div>
+      <h1 class="text-2xl font-extrabold tracking-tight text-slate-100">
+        <%= @business.name %>
+      </h1>
+      <p class="text-slate-500 text-sm mt-1"><%= @business.holder_name %></p>
+    </div>
+
+    <%# ── Bloque CLABE ────────────────────────────────── %>
+    <div class="animate-up bg-[#0f172a] border border-[#1e2d45] rounded-2xl p-6 space-y-4">
+
+      <div>
+        <p class="text-[11px] font-bold tracking-[0.1em] uppercase text-slate-500 mb-2">
+          CLABE interbancaria
+        </p>
+        <p id="clabe-number"
+           class="text-2xl font-mono font-bold tracking-wider text-slate-100 break-all">
+          <%= @business.clabe %>
+        </p>
+      </div>
+
+      <button id="copy-btn"
+              onclick="copyClabe('<%= @business.clabe %>')"
+              class="w-full flex items-center justify-center gap-2
+                     py-4 bg-[#6366f1] hover:bg-[#818cf8] text-white
+                     rounded-xl text-[15px] font-bold tracking-[-0.01em]
+                     transition-all hover:-translate-y-px
+                     hover:shadow-[0_8px_24px_rgba(99,102,241,0.4)]
+                     active:translate-y-0 active:shadow-none border-none cursor-pointer">
+        <svg id="copy-icon" class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+        </svg>
+        <svg id="check-icon" class="w-4 h-4 shrink-0 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+        </svg>
+        <span id="copy-label">Copiar CLABE</span>
+      </button>
+    </div>
+
+    <%# ── Pasos ──────────────────────────────────────── %>
+    <div class="animate-up bg-[#0f172a] border border-[#1e2d45] rounded-2xl p-5 space-y-3">
+      <p class="text-[11px] font-bold tracking-[0.1em] uppercase text-slate-500">
+        Cómo pagar
+      </p>
+      <% steps = [
+        "Copia la CLABE con el botón de arriba",
+        "Abre tu banco y realiza la transferencia",
+        "Regresa aquí y sube tu comprobante"
+      ] %>
+      <% steps.each_with_index do |step, i| %>
+        <div class="flex items-start gap-3">
+          <span class="shrink-0 w-5 h-5 rounded-full bg-[#6366f1]/20 border border-[#6366f1]/40
+                       text-[#6366f1] text-[11px] font-bold flex items-center justify-center mt-0.5">
+            <%= i + 1 %>
+          </span>
+          <p class="text-sm text-slate-300 leading-snug"><%= step %></p>
+        </div>
+      <% end %>
+
+      <% if @business.instructions.present? %>
+        <div class="pt-2 border-t border-[#1e2d45]">
+          <p class="text-xs text-slate-500 mb-1">Nota del negocio</p>
+          <p class="text-sm text-slate-300 leading-relaxed"><%= @business.instructions %></p>
+        </div>
+      <% end %>
+    </div>
+
+    <%# ── Formulario de comprobante ───────────────────── %>
+    <div class="animate-up bg-[#0f172a] border border-[#1e2d45] rounded-2xl p-6 space-y-4">
+
+      <div>
+        <p class="text-[11px] font-bold tracking-[0.1em] uppercase text-slate-500 mb-1">
+          ¿Ya pagaste?
+        </p>
+        <p class="text-base font-semibold text-slate-100">Sube tu comprobante</p>
+        <p class="text-xs text-slate-500 mt-0.5">Foto o PDF de la transferencia</p>
+      </div>
+
+      <%= form_with url: submit_receipt_path(@business.slug),
+                    method: :post,
+                    multipart: true,
+                    class: "space-y-3" do |f| %>
+
+        <label class="flex flex-col items-center justify-center gap-2 w-full
+                       border-2 border-dashed border-[#1e2d45] rounded-xl py-8 px-4
+                       cursor-pointer hover:border-[#6366f1]/50 transition-colors
+                       text-slate-500 hover:text-slate-300"
+               id="file-label">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+          </svg>
+          <span id="file-name" class="text-sm font-medium text-center">
+            Toca aquí para seleccionar archivo
+          </span>
+          <span class="text-xs text-slate-600">JPG, PNG o PDF</span>
+          <%= f.file_field :file,
+              required: true,
+              accept: "image/*,application/pdf",
+              class: "sr-only",
+              onchange: "updateFileName(this)" %>
+        </label>
+
+        <%= f.submit "Enviar comprobante",
+            data: { "turbo-submits-with": "Enviando…" },
+            class: "w-full py-4 bg-[#6366f1] hover:bg-[#818cf8] text-white
+                    rounded-xl text-[15px] font-bold tracking-[-0.01em] cursor-pointer
+                    transition-all hover:-translate-y-px
+                    hover:shadow-[0_8px_24px_rgba(99,102,241,0.4)]
+                    active:translate-y-0 active:shadow-none
+                    disabled:opacity-60 disabled:cursor-not-allowed border-none" %>
+      <% end %>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function copyClabe(clabe) {
+    navigator.clipboard.writeText(clabe).then(function () {
+      var btn       = document.getElementById('copy-btn');
+      var label     = document.getElementById('copy-label');
+      var copyIcon  = document.getElementById('copy-icon');
+      var checkIcon = document.getElementById('check-icon');
+
+      btn.classList.remove('bg-[#6366f1]', 'hover:bg-[#818cf8]');
+      btn.classList.add('bg-green-600');
+      copyIcon.classList.add('hidden');
+      checkIcon.classList.remove('hidden');
+      label.textContent = '¡Copiado!';
+
+      setTimeout(function () {
+        btn.classList.add('bg-[#6366f1]', 'hover:bg-[#818cf8]');
+        btn.classList.remove('bg-green-600');
+        copyIcon.classList.remove('hidden');
+        checkIcon.classList.add('hidden');
+        label.textContent = 'Copiar CLABE';
+      }, 2500);
+    });
+  }
+
+  function updateFileName(input) {
+    var label = document.getElementById('file-name');
+    if (input.files && input.files[0]) {
+      label.textContent = input.files[0].name;
+      label.classList.add('text-[#6366f1]');
+    }
+  }
+</script>
