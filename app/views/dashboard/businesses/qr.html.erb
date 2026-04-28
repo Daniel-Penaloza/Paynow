@@ -3,14 +3,15 @@
 <div class="max-w-sm mx-auto space-y-6 text-center">
 
   <%= link_to "← #{@business.name}", dashboard_business_path(@business),
-        class: "text-sm text-zinc-400 hover:text-zinc-600 block text-left" %>
+        class: "text-sm text-slate-500 hover:text-slate-300 transition-colors block text-left" %>
 
   <div>
-    <h1 class="text-2xl font-bold"><%= @business.name %></h1>
-    <p class="text-zinc-500 text-sm mt-1">Código QR de pago</p>
+    <h1 class="text-2xl font-bold tracking-tight"><%= @business.name %></h1>
+    <p class="text-slate-500 text-sm mt-1">Código QR de pago</p>
   </div>
 
-  <div class="bg-white border border-zinc-200 rounded-2xl p-8 inline-block">
+  <%# QR con fondo blanco para que sea escaneable %>
+  <div class="bg-white rounded-2xl p-8 inline-block shadow-[0_0_0_1px_rgba(255,255,255,0.08)]">
     <%= @qr.as_svg(
           offset: 0,
           color: "000",
@@ -20,23 +21,26 @@
         ).html_safe %>
   </div>
 
-  <div class="bg-zinc-50 rounded-xl px-5 py-4 text-left space-y-2">
+  <%# Info de pago %>
+  <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl px-5 py-4 text-left space-y-3">
     <div class="flex items-center justify-between">
-      <span class="text-xs text-zinc-400">CLABE</span>
-      <span class="font-mono text-sm"><%= @business.clabe %></span>
+      <span class="text-xs font-bold tracking-widest uppercase text-slate-500">CLABE</span>
+      <span class="font-mono text-sm text-slate-100"><%= @business.clabe %></span>
     </div>
+    <div class="border-t border-[#1e2d45]"></div>
     <div class="flex items-center justify-between">
-      <span class="text-xs text-zinc-400">Titular</span>
-      <span class="text-sm"><%= @business.holder_name %></span>
+      <span class="text-xs font-bold tracking-widest uppercase text-slate-500">Titular</span>
+      <span class="text-sm text-slate-100"><%= @business.holder_name %></span>
     </div>
   </div>
 
-  <p class="text-xs text-zinc-400">
+  <p class="text-xs text-slate-600 leading-relaxed">
     El cliente escanea este QR, copia la CLABE, transfiere y sube su comprobante.
   </p>
 
   <button onclick="window.print()"
-    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors">
+    class="w-full bg-[#6366f1] hover:bg-[#818cf8] text-white text-sm font-semibold
+           px-5 py-3 rounded-xl transition-colors border-none cursor-pointer">
     Imprimir QR
   </button>
 

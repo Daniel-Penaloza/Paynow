@@ -1,35 +1,41 @@
 <% content_for :title, "Organizaciones" %>
 
 <div class="space-y-6">
+
   <div class="flex items-center justify-between">
-    <h1 class="text-2xl font-bold">Organizaciones</h1>
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight">Organizaciones</h1>
+      <p class="text-slate-500 text-sm mt-0.5">Clientes activos en la plataforma.</p>
+    </div>
     <%= link_to "Nueva organización", new_admin_organization_path,
-          class: "inline-flex items-center bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors" %>
+          class: "inline-flex items-center bg-[#6366f1] hover:bg-[#818cf8] text-white
+                  text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors shrink-0" %>
   </div>
 
   <% if @organizations.any? %>
-    <div class="bg-white border border-zinc-200 rounded-xl divide-y divide-zinc-100">
+    <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl divide-y divide-[#1e2d45]">
       <% @organizations.each do |org| %>
         <div class="flex items-center justify-between px-5 py-4">
           <div>
-            <p class="font-medium"><%= org.name %></p>
-            <p class="text-sm text-zinc-400 mt-0.5 font-mono"><%= org.subdomain %>.paynow.mx</p>
+            <p class="text-sm font-medium text-slate-100"><%= org.name %></p>
+            <p class="text-xs text-slate-500 font-mono mt-0.5"><%= org.subdomain %>.paynow.mx</p>
           </div>
-          <div class="flex items-center gap-3">
-            <span class="text-xs text-zinc-400"><%= org.users.count %> usuarios</span>
+          <div class="flex items-center gap-4">
+            <span class="text-xs text-slate-600"><%= org.users.count %> usuarios</span>
             <%= link_to "Ver", admin_organization_path(org),
-                  class: "text-sm text-indigo-600 hover:underline" %>
+                  class: "text-sm text-[#6366f1] hover:text-[#818cf8] transition-colors" %>
             <%= link_to "Editar", edit_admin_organization_path(org),
-                  class: "text-sm text-zinc-500 hover:text-zinc-700" %>
+                  class: "text-sm text-slate-500 hover:text-slate-300 transition-colors" %>
           </div>
         </div>
       <% end %>
     </div>
   <% else %>
-    <div class="bg-white border-2 border-dashed border-zinc-200 rounded-xl p-16 text-center">
-      <p class="text-zinc-400">No hay organizaciones registradas.</p>
+    <div class="bg-[#0f172a] border-2 border-dashed border-[#1e2d45] rounded-xl p-16 text-center">
+      <p class="text-slate-500 text-sm">No hay organizaciones registradas.</p>
       <%= link_to "Crear primera organización", new_admin_organization_path,
-            class: "mt-2 inline-block text-sm font-medium text-indigo-600 hover:underline" %>
+            class: "mt-2 inline-block text-sm font-medium text-[#6366f1] hover:text-[#818cf8]" %>
     </div>
   <% end %>
+
 </div>

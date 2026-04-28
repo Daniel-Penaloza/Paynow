@@ -2,17 +2,21 @@
 
 <div class="max-w-xl space-y-6">
   <div>
-    <h1 class="text-2xl font-bold">Editar negocio</h1>
-    <p class="text-zinc-500 mt-1"><%= @business.name %></p>
+    <%= link_to "← #{@business.name}", dashboard_business_path(@business),
+          class: "text-sm text-slate-500 hover:text-slate-300 transition-colors" %>
+    <h1 class="text-2xl font-bold tracking-tight mt-2">Editar negocio</h1>
+    <p class="text-slate-500 text-sm mt-0.5"><%= @business.name %></p>
   </div>
 
-  <div class="bg-white border border-zinc-200 rounded-xl p-6">
+  <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl p-6">
     <%= render "form", business: @business %>
   </div>
 
-  <div class="border-t border-zinc-200 pt-4">
+  <div class="border-t border-[#1e2d45] pt-6">
+    <h2 class="text-xs font-bold tracking-widest uppercase text-slate-600 mb-3">Zona de peligro</h2>
     <%= button_to "Eliminar negocio", dashboard_business_path(@business), method: :delete,
           data: { turbo_confirm: "¿Seguro que deseas eliminar #{@business.name}? Esta acción no se puede deshacer." },
-          class: "text-sm text-red-500 hover:text-red-700 cursor-pointer" %>
+          class: "text-sm text-red-500 hover:text-red-400 transition-colors cursor-pointer
+                  bg-transparent border-none p-0" %>
   </div>
 </div>

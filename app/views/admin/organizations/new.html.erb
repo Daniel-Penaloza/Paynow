@@ -2,10 +2,13 @@
 
 <div class="max-w-xl space-y-6">
   <div>
-    <h1 class="text-2xl font-bold">Nueva organización</h1>
-    <p class="text-zinc-500 mt-1">Los dueños de negocio vivirán bajo esta organización.</p>
+    <%= link_to "← Organizaciones", admin_organizations_path,
+          class: "text-sm text-slate-500 hover:text-slate-300 transition-colors" %>
+    <h1 class="text-2xl font-bold tracking-tight mt-2">Nueva organización</h1>
+    <p class="text-slate-500 text-sm mt-0.5">Los dueños de negocio vivirán bajo esta organización.</p>
   </div>
-  <div class="bg-white border border-zinc-200 rounded-xl p-6">
+
+  <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl p-6">
     <%= render "form", organization: @organization %>
   </div>
 </div>
