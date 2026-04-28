@@ -154,6 +154,11 @@ Receipt
 - [ ] Gestión de status de comprobantes
 - [ ] Monetización / planes
 
+### Infraestructura de desarrollo
+- [x] Servidor enlazado a `0.0.0.0` para acceso desde red local
+- [x] dnsmasq resolviendo `*.lvh.me → 192.168.68.101` para subdominios desde celular
+- [ ] Configurar DNS manual en celular (`192.168.68.101`) para pruebas end-to-end
+
 ---
 
 ## Decisiones tomadas

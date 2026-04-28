@@ -44,6 +44,7 @@ Rails.application.configure do
   config.action_dispatch.tld_length = 1
   config.hosts << "lvh.me"
   config.hosts << /.*\.lvh\.me/
+  config.hosts << "192.168.68.101"
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
