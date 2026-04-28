@@ -1,0 +1,52 @@
+<% content_for :title, "Dashboard" %>
+
+<div class="space-y-8">
+  <div>
+    <h1 class="text-2xl font-bold">Panel de control</h1>
+    <p class="text-zinc-500 mt-1">Visión general de la plataforma.</p>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="bg-white border border-zinc-200 rounded-xl p-5">
+      <p class="text-sm text-zinc-500">Organizaciones</p>
+      <p class="text-3xl font-bold mt-1"><%= Organization.count %></p>
+    </div>
+    <div class="bg-white border border-zinc-200 rounded-xl p-5">
+      <p class="text-sm text-zinc-500">Usuarios</p>
+      <p class="text-3xl font-bold mt-1"><%= User.business_owner.count %></p>
+    </div>
+    <div class="bg-white border border-zinc-200 rounded-xl p-5">
+      <p class="text-sm text-zinc-500">Comprobantes totales</p>
+      <p class="text-3xl font-bold mt-1"><%= Receipt.count %></p>
+    </div>
+  </div>
+
+  <section>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold">Organizaciones recientes</h2>
+      <%= link_to "Ver todas", admin_organizations_path,
+            class: "text-sm text-indigo-600 hover:underline" %>
+    </div>
+
+    <% if @organizations.any? %>
+      <div class="bg-white border border-zinc-200 rounded-xl divide-y divide-zinc-100">
+        <% @organizations.each do |org| %>
+          <div class="flex items-center justify-between px-5 py-4">
+            <div>
+              <p class="font-medium"><%= org.name %></p>
+              <p class="text-xs text-zinc-400 mt-0.5"><%= org.subdomain %>.paynow.mx · <%= org.users.count %> usuarios</p>
+            </div>
+            <%= link_to "Ver", admin_organization_path(org),
+                  class: "text-sm text-indigo-600 hover:underline" %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="bg-white border-2 border-dashed border-zinc-200 rounded-xl p-12 text-center">
+        <p class="text-zinc-400 text-sm">No hay organizaciones aún.</p>
+        <%= link_to "Crear primera organización", new_admin_organization_path,
+              class: "mt-2 inline-block text-sm font-medium text-indigo-600 hover:underline" %>
+      </div>
+    <% end %>
+  </section>
+</div>

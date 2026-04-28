@@ -1,0 +1,36 @@
+<% content_for :title, @organization.name %>
+
+<div class="space-y-8">
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <%= link_to "← Organizaciones", admin_organizations_path, class: "text-sm text-zinc-400 hover:text-zinc-600" %>
+      <h1 class="text-2xl font-bold mt-2"><%= @organization.name %></h1>
+      <p class="text-sm font-mono text-zinc-400 mt-0.5"><%= @organization.subdomain %>.paynow.mx</p>
+    </div>
+    <%= link_to "Editar", edit_admin_organization_path(@organization),
+          class: "text-sm font-medium text-zinc-700 border border-zinc-200 rounded-lg px-4 py-2 hover:bg-zinc-50 transition-colors shrink-0" %>
+  </div>
+
+  <section>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold">Usuarios</h2>
+    </div>
+
+    <% if @users.any? %>
+      <div class="bg-white border border-zinc-200 rounded-xl divide-y divide-zinc-100">
+        <% @users.each do |user| %>
+          <div class="flex items-center justify-between px-5 py-4">
+            <div>
+              <p class="text-sm font-medium"><%= user.email_address %></p>
+              <p class="text-xs text-zinc-400 mt-0.5"><%= user.businesses.count %> negocios · <%= user.role %></p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="bg-white border-2 border-dashed border-zinc-200 rounded-xl p-10 text-center">
+        <p class="text-zinc-400 text-sm">Sin usuarios aún.</p>
+      </div>
+    <% end %>
+  </section>
+</div>

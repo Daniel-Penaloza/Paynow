@@ -1,0 +1,11 @@
+<% content_for :title, "Nueva organización" %>
+
+<div class="max-w-xl space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold">Nueva organización</h1>
+    <p class="text-zinc-500 mt-1">Los dueños de negocio vivirán bajo esta organización.</p>
+  </div>
+  <div class="bg-white border border-zinc-200 rounded-xl p-6">
+    <%= render "form", organization: @organization %>
+  </div>
+</div>

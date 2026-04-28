@@ -1,0 +1,16 @@
+<% content_for :title, "Editar organización" %>
+
+<div class="max-w-xl space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold">Editar organización</h1>
+    <p class="text-zinc-500 mt-1"><%= @organization.name %></p>
+  </div>
+  <div class="bg-white border border-zinc-200 rounded-xl p-6">
+    <%= render "form", organization: @organization %>
+  </div>
+  <div class="border-t border-zinc-200 pt-4">
+    <%= button_to "Eliminar organización", admin_organization_path(@organization), method: :delete,
+          data: { turbo_confirm: "¿Seguro? Esto eliminará todos los usuarios y datos de #{@organization.name}." },
+          class: "text-sm text-red-500 hover:text-red-700 cursor-pointer" %>
+  </div>
+</div>

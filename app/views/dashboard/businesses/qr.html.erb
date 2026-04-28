@@ -1,0 +1,43 @@
+<% content_for :title, "QR · #{@business.name}" %>
+
+<div class="max-w-sm mx-auto space-y-6 text-center">
+
+  <%= link_to "← #{@business.name}", dashboard_business_path(@business),
+        class: "text-sm text-zinc-400 hover:text-zinc-600 block text-left" %>
+
+  <div>
+    <h1 class="text-2xl font-bold"><%= @business.name %></h1>
+    <p class="text-zinc-500 text-sm mt-1">Código QR de pago</p>
+  </div>
+
+  <div class="bg-white border border-zinc-200 rounded-2xl p-8 inline-block">
+    <%= @qr.as_svg(
+          offset: 0,
+          color: "000",
+          shape_rendering: "crispEdges",
+          module_size: 6,
+          standalone: true
+        ).html_safe %>
+  </div>
+
+  <div class="bg-zinc-50 rounded-xl px-5 py-4 text-left space-y-2">
+    <div class="flex items-center justify-between">
+      <span class="text-xs text-zinc-400">CLABE</span>
+      <span class="font-mono text-sm"><%= @business.clabe %></span>
+    </div>
+    <div class="flex items-center justify-between">
+      <span class="text-xs text-zinc-400">Titular</span>
+      <span class="text-sm"><%= @business.holder_name %></span>
+    </div>
+  </div>
+
+  <p class="text-xs text-zinc-400">
+    El cliente escanea este QR, copia la CLABE, transfiere y sube su comprobante.
+  </p>
+
+  <button onclick="window.print()"
+    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors">
+    Imprimir QR
+  </button>
+
+</div>

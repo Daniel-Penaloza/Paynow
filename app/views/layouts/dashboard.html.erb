@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= content_for?(:title) ? yield(:title) + " · PayNow" : "PayNow" %></title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-zinc-50 text-zinc-900 antialiased">
+    <div class="min-h-screen flex flex-col">
+
+      <%# Navbar %>
+      <header class="bg-white border-b border-zinc-200 sticky top-0 z-10">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
+          <div class="flex items-center gap-6">
+            <span class="font-bold text-lg tracking-tight text-indigo-600">PayNow</span>
+            <nav class="hidden sm:flex items-center gap-1">
+              <%= link_to "Inicio", dashboard_root_path,
+                    class: "px-3 py-1.5 rounded-md text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-colors #{"bg-zinc-100 text-zinc-900" if current_page?(dashboard_root_path)}" %>
+              <%= link_to "Negocios", dashboard_businesses_path,
+                    class: "px-3 py-1.5 rounded-md text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-colors #{"bg-zinc-100 text-zinc-900" if request.path.start_with?("/dashboard/businesses")}" %>
+            </nav>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-zinc-500 hidden sm:block"><%= Current.user.email_address %></span>
+            <%= button_to "Salir", session_path, method: :delete,
+                  class: "text-sm text-zinc-500 hover:text-zinc-900 transition-colors cursor-pointer" %>
+          </div>
+        </div>
+      </header>
+
+      <%# Flash %>
+      <% if notice.present? %>
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-4 w-full">
+          <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 text-sm flex items-center gap-2">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <%= notice %>
+          </div>
+        </div>
+      <% end %>
+      <% if alert.present? %>
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-4 w-full">
+          <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg px-4 py-3 text-sm">
+            <%= alert %>
+          </div>
+        </div>
+      <% end %>
+
+      <%# Contenido principal %>
+      <main class="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-8 w-full">
+        <%= yield %>
+      </main>
+
+      <footer class="border-t border-zinc-200 py-4 text-center text-xs text-zinc-400">
+        PayNow &copy; <%= Date.current.year %>
+      </footer>
+    </div>
+  </body>
+</html>
