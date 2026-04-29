@@ -5,13 +5,73 @@
   <%= link_to "← Comprobantes", dashboard_business_receipts_path(@business),
         class: "text-sm text-slate-500 hover:text-slate-300 transition-colors" %>
 
-  <div>
-    <h1 class="text-2xl font-bold tracking-tight">Comprobante</h1>
-    <p class="text-slate-500 text-sm mt-0.5">
-      <%= @receipt.submitted_at.strftime("%d de %B de %Y, %H:%M hrs") %>
-    </p>
+  <%# Header %>
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight">Comprobante</h1>
+      <p class="text-slate-500 text-sm mt-0.5">
+        <%= @receipt.submitted_at.strftime("%d de %B de %Y, %H:%M hrs") %>
+      </p>
+    </div>
+    <%= receipt_status_badge(@receipt.verification_status) %>
   </div>
 
+  <%# Datos extraídos por Claude %>
+  <% if @receipt.verification_status != "pending" %>
+    <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl divide-y divide-[#1e2d45]">
+
+      <% if @receipt.amount_cents.present? %>
+        <div class="px-5 py-4">
+          <p class="text-xs text-slate-500 uppercase tracking-wide mb-1">Monto</p>
+          <p class="text-2xl font-bold text-slate-100">
+            $<%= number_with_delimiter(@receipt.amount, precision: 2, separator: ".", delimiter: ",") %>
+            <span class="text-sm font-normal text-slate-500">MXN</span>
+          </p>
+        </div>
+      <% end %>
+
+      <div class="grid grid-cols-2 divide-x divide-[#1e2d45]">
+        <% if @receipt.bank_name.present? %>
+          <div class="px-5 py-4">
+            <p class="text-xs text-slate-500 uppercase tracking-wide mb-1">Banco</p>
+            <p class="text-sm text-slate-100"><%= @receipt.bank_name %></p>
+          </div>
+        <% end %>
+
+        <% if @receipt.transfer_date.present? %>
+          <div class="px-5 py-4">
+            <p class="text-xs text-slate-500 uppercase tracking-wide mb-1">Fecha de transferencia</p>
+            <p class="text-sm text-slate-100"><%= @receipt.transfer_date.strftime("%d de %B de %Y") %></p>
+          </div>
+        <% end %>
+      </div>
+
+      <% if @receipt.reference_number.present? %>
+        <div class="px-5 py-4">
+          <p class="text-xs text-slate-500 uppercase tracking-wide mb-1">Referencia / Folio</p>
+          <p class="font-mono text-sm text-slate-100"><%= @receipt.reference_number %></p>
+        </div>
+      <% end %>
+
+      <% if @receipt.verification_notes.present? %>
+        <div class="px-5 py-4">
+          <p class="text-xs text-slate-500 uppercase tracking-wide mb-1">Notas</p>
+          <p class="text-sm text-slate-400"><%= @receipt.verification_notes %></p>
+        </div>
+      <% end %>
+
+    </div>
+  <% else %>
+    <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl px-5 py-4 flex items-center gap-3">
+      <svg class="w-4 h-4 text-amber-400 shrink-0 animate-spin" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+      </svg>
+      <p class="text-sm text-amber-400">Analizando el comprobante, esto toma unos segundos…</p>
+    </div>
+  <% end %>
+
+  <%# Imagen / PDF %>
   <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl overflow-hidden">
     <% if @receipt.file.attached? %>
       <% if @receipt.file.content_type.start_with?("image/") %>

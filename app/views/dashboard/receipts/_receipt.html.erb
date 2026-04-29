@@ -1,16 +1,28 @@
-<div class="flex items-center justify-between px-5 py-4
-            animate-[fadeIn_0.3s_ease_both]"
+<div id="receipt_<%= receipt.id %>"
+     class="flex items-center justify-between px-5 py-4 animate-[fadeIn_0.3s_ease_both]"
      style="animation: fadeIn 0.3s ease both;">
-  <div>
-    <p class="text-sm font-medium text-slate-100">
-      <%= receipt.submitted_at.strftime("%d de %B de %Y") %>
-    </p>
-    <p class="text-xs text-slate-500 mt-0.5">
-      <%= receipt.submitted_at.strftime("%H:%M hrs") %>
-    </p>
+
+  <div class="flex items-center gap-4 min-w-0">
+    <%# Badge de status %>
+    <%= receipt_status_badge(receipt.verification_status) %>
+
+    <div class="min-w-0">
+      <% if receipt.amount_cents.present? %>
+        <p class="text-sm font-semibold text-slate-100">
+          $<%= number_with_delimiter(receipt.amount, precision: 2, separator: ".", delimiter: ",") %> MXN
+        </p>
+      <% end %>
+      <p class="text-xs text-slate-500 mt-0.5">
+        <%= receipt.submitted_at.strftime("%d de %B, %H:%M hrs") %>
+      </p>
+      <% if receipt.bank_name.present? %>
+        <p class="text-xs text-slate-600 mt-0.5 truncate"><%= receipt.bank_name %></p>
+      <% end %>
+    </div>
   </div>
+
   <%= link_to "Ver →", dashboard_business_receipt_path(business, receipt),
-        class: "text-sm text-[#6366f1] hover:text-[#818cf8] transition-colors" %>
+        class: "text-sm text-[#6366f1] hover:text-[#818cf8] transition-colors shrink-0 ml-4" %>
 </div>
 
 <style>

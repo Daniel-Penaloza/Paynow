@@ -178,10 +178,10 @@ Receipt
 - [x] Actualizar el `Receipt` con los datos extraídos y el `verification_status` correspondiente
 
 #### Dashboard
-- [ ] Badge de status en lista de comprobantes (`pending` / `verified` / `rejected` / `unreadable`)
-- [ ] Mostrar monto extraído en la tarjeta del comprobante
-- [ ] Vista `show` del comprobante con todos los campos extraídos (banco, monto, fecha, referencia, notas)
-- [ ] Turbo Stream que actualiza el badge y monto en tiempo real cuando el job termina
+- [x] Badge de status en lista de comprobantes (`pending` / `verified` / `rejected` / `unreadable`)
+- [x] Mostrar monto extraído en la tarjeta del comprobante
+- [x] Vista `show` del comprobante con todos los campos extraídos (banco, monto, fecha, referencia, notas)
+- [x] Turbo Stream que actualiza el badge y monto en tiempo real cuando el job termina
 
 #### Contabilidad (Fase 2 desbloqueada por esta fase)
 - [ ] Totales por período en el dashboard usando `amount_cents` + `transfer_date`
