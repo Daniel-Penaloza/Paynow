@@ -9,6 +9,6 @@ if File.exist?(env_file)
   File.foreach(env_file) do |line|
     next if line.strip.empty? || line.start_with?("#")
     key, value = line.strip.split("=", 2)
-    ENV[key] ||= value
+    ENV[key] ||= value.gsub(/\A["']|["']\z/, "")
   end
 end

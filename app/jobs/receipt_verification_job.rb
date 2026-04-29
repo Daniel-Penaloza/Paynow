@@ -71,9 +71,9 @@ class ReceiptVerificationJob < ApplicationJob
   end
 
   def call_claude(image_data)
-    client = Anthropic::Client.new(api_key: ENV.fetch("ANTHROPIC_API_KEY"))
+    client = Anthropic::Client.new(access_token: ENV.fetch("ANTHROPIC_API_KEY"))
 
-    response = client.messages(
+    response = client.messages(parameters: {
       model: "claude-haiku-4-5-20251001",
       max_tokens: 512,
       messages: [
@@ -92,9 +92,10 @@ class ReceiptVerificationJob < ApplicationJob
           ]
         }
       ]
-    )
+    })
 
     raw = response.dig("content", 0, "text") || ""
+    raw = raw.gsub(/\A```(?:json)?\s*|\s*```\z/, "").strip
     JSON.parse(raw)
   rescue JSON::ParserError => e
     Rails.logger.error("[ReceiptVerificationJob] JSON inválido de Claude: #{e.message}")
