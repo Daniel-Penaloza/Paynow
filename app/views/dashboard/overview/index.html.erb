@@ -68,21 +68,71 @@
   </section>
 
   <%# ── Comprobantes recientes ──────────────────────── %>
-  <% if @recent_receipts.any? %>
+  <% if @total_receipts > 0 %>
     <section>
-      <h2 class="text-base font-semibold text-slate-100 mb-4">Comprobantes recientes</h2>
-      <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl divide-y divide-[#1e2d45]">
-        <% @recent_receipts.each do |receipt| %>
-          <div class="flex items-center justify-between px-5 py-3">
-            <div>
-              <p class="text-sm font-medium text-slate-100"><%= receipt.business.name %></p>
-              <p class="text-xs text-slate-500"><%= receipt.submitted_at.strftime("%d %b %Y, %H:%M") %></p>
-            </div>
-            <%= link_to "Ver →", dashboard_business_receipt_path(receipt.business, receipt),
-                  class: "text-xs text-[#6366f1] hover:text-[#818cf8] transition-colors" %>
+      <div class="flex items-center justify-between mb-4 gap-4 flex-wrap">
+        <h2 class="text-base font-semibold text-slate-100">Comprobantes recientes</h2>
+
+        <%# Dropdown per_page %>
+        <%= form_with url: dashboard_root_path, method: :get, data: { turbo: false } do |f| %>
+          <div class="flex items-center gap-2">
+            <label class="text-xs text-slate-500">Mostrar</label>
+            <%= f.select :per_page,
+                  options_for_select(Dashboard::OverviewController::PER_PAGE_OPTIONS.map { |n| [n, n] }, @per_page),
+                  {},
+                  class: "bg-[#0f172a] border border-[#1e2d45] rounded-lg px-3 py-1.5 text-sm
+                          text-slate-200 focus:outline-none focus:border-[#6366f1] cursor-pointer",
+                  onchange: "this.form.submit()" %>
+            <label class="text-xs text-slate-500">por página</label>
           </div>
         <% end %>
       </div>
+
+      <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl divide-y divide-[#1e2d45]">
+        <% @recent_receipts.each do |receipt| %>
+          <div class="flex items-center justify-between px-5 py-3 gap-4">
+            <div class="flex items-center gap-3 min-w-0">
+              <%= receipt_status_badge(receipt.verification_status) %>
+              <div class="min-w-0">
+                <p class="text-sm font-medium text-slate-100 truncate"><%= receipt.business.name %></p>
+                <p class="text-xs text-slate-500 mt-0.5">
+                  <%= receipt.submitted_at.strftime("%d %b %Y, %H:%M") %>
+                  <% if receipt.amount_cents.present? %>
+                    · <span class="text-slate-400">$<%= number_with_delimiter(receipt.amount, precision: 2, separator: ".", delimiter: ",") %></span>
+                  <% end %>
+                </p>
+              </div>
+            </div>
+            <%= link_to "Ver →", dashboard_business_receipt_path(receipt.business, receipt),
+                  class: "text-xs text-[#6366f1] hover:text-[#818cf8] transition-colors shrink-0" %>
+          </div>
+        <% end %>
+      </div>
+
+      <%# Paginador %>
+      <% if @recent_receipts.total_pages > 1 %>
+        <div class="flex items-center justify-between mt-4 text-sm text-slate-500">
+          <span>
+            <%= @recent_receipts.offset_value + 1 %>–<%= [@recent_receipts.offset_value + @per_page, @total_receipts].min %>
+            de <%= @total_receipts %> comprobantes
+          </span>
+          <div class="flex items-center gap-1">
+            <% if @recent_receipts.prev_page %>
+              <%= link_to "← Anterior", dashboard_root_path(page: @recent_receipts.prev_page, per_page: @per_page),
+                    class: "px-3 py-1.5 rounded-lg border border-[#1e2d45] text-slate-400
+                            hover:border-slate-500 hover:text-slate-200 transition-colors" %>
+            <% end %>
+            <span class="px-3 py-1.5 text-slate-400">
+              Página <%= @recent_receipts.current_page %> de <%= @recent_receipts.total_pages %>
+            </span>
+            <% if @recent_receipts.next_page %>
+              <%= link_to "Siguiente →", dashboard_root_path(page: @recent_receipts.next_page, per_page: @per_page),
+                    class: "px-3 py-1.5 rounded-lg border border-[#1e2d45] text-slate-400
+                            hover:border-slate-500 hover:text-slate-200 transition-colors" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
     </section>
   <% end %>
 
