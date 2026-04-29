@@ -82,6 +82,7 @@ no tarjetas. El proceso actual para hacer una transferencia es lento y propenso 
 
 ## Funcionalidades — siguientes iteraciones
 
+- [x] Dashboard de comprobantes con filtros por período y rango de fechas
 - [ ] Contabilidad: suma de comprobantes por día / semana / mes / año
 - [ ] Clientes frecuentes (identificación por datos capturados en comprobante)
 - [ ] Exportar reporte de comprobantes (CSV/PDF)
@@ -89,6 +90,7 @@ no tarjetas. El proceso actual para hacer una transferencia es lento y propenso 
 - [ ] Monto sugerido editable en la landing page (ej. "Tu total es $450")
 - [ ] Vista de comprobante con status (pendiente / confirmado / rechazado)
 - [ ] Planes / suscripción por organización (si se monetiza)
+- [ ] Suite de pruebas con RSpec (models, requests, system specs)
 
 ---
 
@@ -144,20 +146,69 @@ Receipt
 - [ ] Deploy en Fly.io
 
 ### Fase 2 — Valor para el Business Owner
-- [ ] Dashboard de comprobantes con filtros
+- [x] Dashboard de comprobantes con filtros (Hoy / Esta semana / Este mes / Este año / Rango personalizado)
 - [ ] Contabilidad básica (totales por período)
 - [ ] Clientes frecuentes
 
-### Fase 3 — Pulido y escala
+### Fase 3 — Extracción inteligente de comprobantes (Claude Vision)
+
+**Objetivo:** verificar automáticamente que cada comprobante sea una transferencia bancaria válida, extraer el monto y la fecha para alimentar la contabilidad. Funciona con todos los bancos y neobancos de México (BBVA, Nu, Santander, Banorte, HSBC, Hey Banco, Mercado Pago, Spin, Clip, Klar, Albo, Stori, Fondeadora, etc.).
+
+**Flujo:**
+1. Cliente sube comprobante → Receipt se crea con status `pending`
+2. `ReceiptVerificationJob` se encola automáticamente
+3. El job manda la imagen a Claude API (vision)
+4. Claude responde JSON estructurado con los campos extraídos
+5. Se valida tipo y fecha → Receipt se actualiza con status y monto
+6. Turbo Stream notifica al dashboard en tiempo real
+
+#### Base de datos
+- [ ] Migración: agregar `amount_cents` (integer), `transfer_date` (date), `bank_name` (string), `reference_number` (string), `verification_status` (string, default: `pending`), `verification_notes` (text) al modelo `Receipt`
+
+#### Modelo
+- [ ] Scopes y validaciones nuevas en `Receipt` para los campos extraídos
+- [ ] Callback `after_create_commit` para encolar `ReceiptVerificationJob`
+
+#### Job de verificación
+- [ ] Crear `ReceiptVerificationJob` con ActiveJob + Solid Queue
+- [ ] Convertir archivo adjunto a base64 (imágenes PNG/JPG)
+- [ ] Soporte para PDFs: convertir primera página a imagen con `mini_magick` antes de mandar a Claude
+- [ ] Integración con Claude API (vision) — prompt estructurado que devuelve JSON con: `{ is_transfer, transfer_date, amount, bank_name, reference_number, notes }`
+- [ ] Lógica de validación: verificar que sea transferencia + que la fecha sea la actual
+- [ ] Actualizar el `Receipt` con los datos extraídos y el `verification_status` correspondiente
+
+#### Dashboard
+- [ ] Badge de status en lista de comprobantes (`pending` / `verified` / `rejected` / `unreadable`)
+- [ ] Mostrar monto extraído en la tarjeta del comprobante
+- [ ] Vista `show` del comprobante con todos los campos extraídos (banco, monto, fecha, referencia, notas)
+- [ ] Turbo Stream que actualiza el badge y monto en tiempo real cuando el job termina
+
+#### Contabilidad (Fase 2 desbloqueada por esta fase)
+- [ ] Totales por período en el dashboard usando `amount_cents` + `transfer_date`
+- [ ] Solo contar comprobantes con `verification_status: verified`
+
+### Fase 4 — Pulido y escala
 - [ ] Notificaciones WhatsApp
-- [ ] Exportación de reportes
-- [ ] Gestión de status de comprobantes
-- [ ] Monetización / planes
+- [ ] Exportación de reportes (CSV/PDF)
+- [ ] Monto sugerido editable en la landing page (ej. "Tu total es $450")
+- [ ] Planes / suscripción por organización (monetización)
+
+### Fase 5 — Pruebas con RSpec
+- [ ] Setup de RSpec + FactoryBot + Shoulda Matchers
+- [ ] Model specs: Organization, User, Business, Receipt (validaciones, scopes, callbacks)
+- [ ] Request specs: autenticación, acceso por rol (Super Admin vs Business Owner)
+- [ ] Request specs: CRUD de negocios y comprobantes
+- [ ] Request specs: filtros de comprobantes (period, date_from, date_to)
+- [ ] Request specs: landing page pública (sin login)
+- [ ] Unit specs: `ReceiptVerificationJob` con stubs de Claude API
+- [ ] System specs (Capybara): flujo completo de subida de comprobante
+- [ ] System specs (Capybara): notificación en tiempo real con Turbo Streams
 
 ### Infraestructura de desarrollo
 - [x] Servidor enlazado a `0.0.0.0` para acceso desde red local
 - [x] dnsmasq resolviendo `*.lvh.me → 192.168.68.101` para subdominios desde celular
 - [ ] Configurar DNS manual en celular (`192.168.68.101`) para pruebas end-to-end
+- [ ] Deploy en Fly.io
 
 ---
 
