@@ -5,6 +5,7 @@ class Receipt < ApplicationRecord
   VERIFICATION_STATUSES = %w[pending verified rejected unreadable].freeze
 
   validates :file, presence: true
+  validates :payer_phone, format: { with: /\A[\d\s\+\-\(\)]{7,20}\z/, message: "formato inválido" }, allow_blank: true
   validates :submitted_at, presence: true
   validates :verification_status, inclusion: { in: VERIFICATION_STATUSES }
 

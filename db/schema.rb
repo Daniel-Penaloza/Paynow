@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_29_023157) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_29_063135) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -75,6 +75,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_29_023157) do
     t.string "reference_number"
     t.string "verification_status", default: "pending", null: false
     t.text "verification_notes"
+    t.string "payer_name"
+    t.string "payer_phone"
     t.index ["business_id"], name: "index_receipts_on_business_id"
   end
 

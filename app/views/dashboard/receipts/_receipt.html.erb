@@ -15,7 +15,9 @@
       <p class="text-xs text-slate-500 mt-0.5">
         <%= receipt.submitted_at.strftime("%d de %B, %H:%M hrs") %>
       </p>
-      <% if receipt.bank_name.present? %>
+      <% if receipt.payer_name.present? %>
+        <p class="text-xs text-slate-400 mt-0.5 truncate"><%= receipt.payer_name %></p>
+      <% elsif receipt.bank_name.present? %>
         <p class="text-xs text-slate-600 mt-0.5 truncate"><%= receipt.bank_name %></p>
       <% end %>
     </div>

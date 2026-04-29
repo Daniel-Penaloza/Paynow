@@ -1,0 +1,67 @@
+<% content_for :title, "Clientes frecuentes" %>
+
+<div class="space-y-6">
+
+  <%# ── Header ──────────────────────────────────────── %>
+  <div class="flex items-center justify-between gap-4">
+    <div>
+      <%= link_to "← #{@business.name}", dashboard_business_path(@business),
+            class: "text-sm text-slate-500 hover:text-slate-300 transition-colors" %>
+      <h1 class="text-2xl font-bold tracking-tight mt-2">Clientes frecuentes</h1>
+      <p class="text-slate-500 text-sm mt-0.5">Pagadores que registraron sus datos al enviar comprobantes</p>
+    </div>
+  </div>
+
+  <% if @clients.any? %>
+    <%# ── Tabla de clientes ──────────────────────────── %>
+    <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-[#1e2d45]">
+            <th class="text-left px-5 py-3 text-xs font-bold uppercase tracking-widest text-slate-500">Cliente</th>
+            <th class="text-right px-5 py-3 text-xs font-bold uppercase tracking-widest text-slate-500 hidden sm:table-cell">Pagos</th>
+            <th class="text-right px-5 py-3 text-xs font-bold uppercase tracking-widest text-slate-500">Total verificado</th>
+            <th class="text-right px-5 py-3 text-xs font-bold uppercase tracking-widest text-slate-500 hidden md:table-cell">Último pago</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#1e2d45]">
+          <% @clients.each do |client| %>
+            <tr class="hover:bg-[#1e2d45]/30 transition-colors">
+              <td class="px-5 py-4">
+                <p class="font-medium text-slate-100 leading-tight">
+                  <%= client.payer_name.presence || "Sin nombre" %>
+                </p>
+                <p class="text-xs text-slate-500 mt-0.5 font-mono"><%= client.payer_phone %></p>
+              </td>
+              <td class="px-5 py-4 text-right text-slate-400 hidden sm:table-cell">
+                <%= client.receipt_count %>
+                <span class="text-slate-600"><%= client.receipt_count == 1 ? "pago" : "pagos" %></span>
+              </td>
+              <td class="px-5 py-4 text-right font-semibold text-slate-100">
+                $<%= number_with_delimiter(client.total_cents / 100.0, precision: 2, separator: ".", delimiter: ",") %>
+                <span class="text-xs font-normal text-slate-500">MXN</span>
+              </td>
+              <td class="px-5 py-4 text-right text-slate-500 text-xs hidden md:table-cell">
+                <%= time_ago_in_words(client.last_seen) %> atrás
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+  <% else %>
+    <%# ── Estado vacío ───────────────────────────────── %>
+    <div class="bg-[#0f172a] border-2 border-dashed border-[#1e2d45] rounded-xl p-12 text-center space-y-3">
+      <svg class="w-10 h-10 mx-auto text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+      </svg>
+      <p class="text-slate-400 font-medium">Aún no hay clientes registrados</p>
+      <p class="text-slate-600 text-sm max-w-xs mx-auto">
+        Cuando un pagador ingrese su nombre y teléfono al subir un comprobante, aparecerá aquí.
+      </p>
+    </div>
+  <% end %>
+
+</div>

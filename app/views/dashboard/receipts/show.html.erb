@@ -63,6 +63,23 @@
         </div>
       <% end %>
 
+      <% if @receipt.payer_name.present? || @receipt.payer_phone.present? %>
+        <div class="px-5 py-4 grid grid-cols-2 divide-x divide-[#1e2d45]">
+          <% if @receipt.payer_name.present? %>
+            <div <% unless @receipt.payer_phone.present? %>class="col-span-2"<% end %>>
+              <p class="text-xs text-slate-500 uppercase tracking-wide mb-1">Pagador</p>
+              <p class="text-sm text-slate-100"><%= @receipt.payer_name %></p>
+            </div>
+          <% end %>
+          <% if @receipt.payer_phone.present? %>
+            <div class="<%= @receipt.payer_name.present? ? 'pl-4' : 'col-span-2' %>">
+              <p class="text-xs text-slate-500 uppercase tracking-wide mb-1">Teléfono</p>
+              <p class="text-sm font-mono text-slate-100"><%= @receipt.payer_phone %></p>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
       <% if @receipt.verification_notes.present? %>
         <div class="px-5 py-4">
           <p class="text-xs text-slate-500 uppercase tracking-wide mb-1">Notas</p>

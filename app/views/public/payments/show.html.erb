@@ -116,6 +116,75 @@
               onchange: "updateFileName(this)" %>
         </label>
 
+        <%# ── Datos del pagador (opcionales) ───────────────── %>
+        <div class="rounded-xl border border-[#1e2d45] overflow-hidden">
+          <button type="button"
+                  onclick="togglePayerFields()"
+                  class="w-full flex items-center justify-between px-4 py-3
+                         text-left bg-transparent hover:bg-[#1e2d45]/40 transition-colors
+                         cursor-pointer border-none">
+            <span class="flex items-center gap-2 text-sm font-medium text-slate-300">
+              <svg class="w-4 h-4 text-[#6366f1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+              Agregar mis datos <span class="text-slate-500 font-normal">(opcional)</span>
+            </span>
+            <svg id="payer-chevron" class="w-4 h-4 text-slate-500 transition-transform duration-200"
+                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+
+          <div id="payer-fields" class="hidden px-4 pb-4 space-y-3 border-t border-[#1e2d45]">
+
+            <%# Disclaimer ─────────────────────────────────── %>
+            <div class="mt-3 rounded-lg bg-[#6366f1]/8 border border-[#6366f1]/20 px-3 py-2.5 flex gap-2.5">
+              <svg class="w-4 h-4 text-[#6366f1] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <div class="space-y-1">
+                <p class="text-xs font-semibold text-[#818cf8]">¿Por qué registrar mis datos?</p>
+                <ul class="text-xs text-slate-400 space-y-0.5">
+                  <li>• El negocio puede confirmar tu pago más rápido</li>
+                  <li>• Te identifican fácilmente si hay alguna duda</li>
+                  <li>• Apareces como cliente frecuente para facilitar futuros pagos</li>
+                </ul>
+                <p class="text-[11px] text-slate-600 pt-0.5">
+                  Tus datos solo son visibles para el dueño del negocio.
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <%= f.label :payer_name, "Nombre completo",
+                    class: "block text-xs text-slate-500 uppercase tracking-wide mb-1" %>
+              <%= f.text_field :payer_name,
+                    placeholder: "Ej. Juan García",
+                    autocomplete: "name",
+                    class: "w-full bg-[#0f172a] border border-[#1e2d45] rounded-lg px-3 py-2.5
+                            text-sm text-slate-100 placeholder-slate-600
+                            focus:outline-none focus:border-[#6366f1]/60 focus:ring-1 focus:ring-[#6366f1]/30
+                            transition-colors" %>
+            </div>
+
+            <div>
+              <%= f.label :payer_phone, "Teléfono",
+                    class: "block text-xs text-slate-500 uppercase tracking-wide mb-1" %>
+              <%= f.telephone_field :payer_phone,
+                    placeholder: "Ej. 55 1234 5678",
+                    autocomplete: "tel",
+                    inputmode: "tel",
+                    class: "w-full bg-[#0f172a] border border-[#1e2d45] rounded-lg px-3 py-2.5
+                            text-sm text-slate-100 placeholder-slate-600
+                            focus:outline-none focus:border-[#6366f1]/60 focus:ring-1 focus:ring-[#6366f1]/30
+                            transition-colors" %>
+            </div>
+
+          </div>
+        </div>
+
         <%= f.submit "Enviar comprobante",
             data: { "turbo-submits-with": "Enviando…" },
             class: "w-full py-4 bg-[#6366f1] hover:bg-[#818cf8] text-white
@@ -160,5 +229,12 @@
       label.textContent = input.files[0].name;
       label.classList.add('text-[#6366f1]');
     }
+  }
+
+  function togglePayerFields() {
+    var fields  = document.getElementById('payer-fields');
+    var chevron = document.getElementById('payer-chevron');
+    var hidden  = fields.classList.toggle('hidden');
+    chevron.style.transform = hidden ? '' : 'rotate(180deg)';
   }
 </script>

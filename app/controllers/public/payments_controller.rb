@@ -8,7 +8,7 @@ class Public::PaymentsController < ActionController::Base
   end
 
   def submit_receipt
-    @receipt = @business.receipts.build(submitted_at: Time.current)
+    @receipt = @business.receipts.build(receipt_params.merge(submitted_at: Time.current))
     @receipt.file.attach(params[:file])
 
     if @receipt.save
@@ -19,6 +19,10 @@ class Public::PaymentsController < ActionController::Base
   end
 
   private
+
+  def receipt_params
+    params.permit(:payer_name, :payer_phone)
+  end
 
   def set_organization
     @organization = Organization.find_by!(subdomain: request.subdomain)

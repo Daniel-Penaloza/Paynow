@@ -11,6 +11,9 @@
       <p class="text-slate-500 text-sm mt-0.5"><%= @business.holder_name %></p>
     </div>
     <div class="flex items-center gap-2 shrink-0">
+      <%= link_to "Clientes", dashboard_business_clients_path(@business),
+            class: "text-sm font-medium text-slate-400 border border-[#1e2d45]
+                    rounded-xl px-4 py-2 hover:border-slate-500 hover:text-slate-200 transition-colors" %>
       <%= link_to "QR", qr_dashboard_business_path(@business),
             class: "text-sm font-medium text-[#6366f1] border border-[#6366f1]/30
                     rounded-xl px-4 py-2 hover:bg-[#6366f1]/10 transition-colors" %>
