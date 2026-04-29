@@ -37,6 +37,7 @@ class ReceiptVerificationJob < ApplicationJob
     result = call_claude(image_data)
     apply_result(receipt, result, force: force)
     broadcast_update(receipt)
+    broadcast_accounting_update(receipt.business)
   rescue => e
     Rails.logger.error("[ReceiptVerificationJob] Error en receipt #{receipt_id}: #{e.message}")
     receipt&.update!(verification_status: "unreadable", verification_notes: "Error interno al procesar el comprobante.")
@@ -145,5 +146,16 @@ class ReceiptVerificationJob < ApplicationJob
       partial: "dashboard/receipts/receipt",
       locals: { receipt: receipt, business: receipt.business }
     )
+  end
+
+  def broadcast_accounting_update(business)
+    Turbo::StreamsChannel.broadcast_replace_to(
+      "business_#{business.id}_receipts",
+      target: "accounting_#{business.id}",
+      partial: "dashboard/businesses/accounting",
+      locals: { business: business }
+    )
+  rescue => e
+    Rails.logger.error("[ReceiptVerificationJob] Error broadcasting accounting: #{e.message}")
   end
 end

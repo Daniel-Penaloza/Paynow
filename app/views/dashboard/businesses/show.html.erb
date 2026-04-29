@@ -48,27 +48,7 @@
   </div>
 
   <%# ── Contabilidad ───────────────────────────────── %>
-  <section>
-    <h2 class="text-xs font-bold tracking-widest uppercase text-slate-500 mb-4">Ingresos verificados</h2>
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <% [
-        { label: "Hoy",        amount: @totals[:today],      count: @totals[:today_count] },
-        { label: "Esta semana", amount: @totals[:this_week],  count: @totals[:this_week_count] },
-        { label: "Este mes",   amount: @totals[:this_month], count: @totals[:this_month_count] },
-        { label: "Este año",   amount: @totals[:this_year],  count: @totals[:this_year_count] }
-      ].each do |period| %>
-        <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl p-4">
-          <p class="text-xs text-slate-500 mb-2"><%= period[:label] %></p>
-          <p class="text-lg font-bold text-slate-100 leading-none">
-            $<%= number_with_delimiter(period[:amount], precision: 2, separator: ".", delimiter: ",") %>
-          </p>
-          <p class="text-xs text-slate-600 mt-1.5">
-            <%= period[:count] %> <%= period[:count] == 1 ? "pago" : "pagos" %>
-          </p>
-        </div>
-      <% end %>
-    </div>
-  </section>
+  <%= render "dashboard/businesses/accounting", business: @business %>
 
   <%# ── Comprobantes recientes ──────────────────────── %>
   <%= turbo_stream_from "business_#{@business.id}_receipts" %>
