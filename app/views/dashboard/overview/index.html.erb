@@ -11,15 +11,15 @@
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
     <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl p-5">
       <p class="text-xs font-bold tracking-widest uppercase text-slate-500">Negocios activos</p>
-      <p class="text-3xl font-extrabold tracking-tight mt-2 text-slate-100"><%= @businesses.count %></p>
+      <p class="text-3xl font-extrabold tracking-tight mt-2 text-slate-100"><%= @businesses.size %></p>
     </div>
     <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl p-5">
       <p class="text-xs font-bold tracking-widest uppercase text-slate-500">Comprobantes recibidos</p>
-      <p class="text-3xl font-extrabold tracking-tight mt-2 text-slate-100"><%= Receipt.where(business: @businesses).count %></p>
+      <p class="text-3xl font-extrabold tracking-tight mt-2 text-slate-100"><%= @total_receipts %></p>
     </div>
     <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl p-5">
       <p class="text-xs font-bold tracking-widest uppercase text-slate-500">Hoy</p>
-      <p class="text-3xl font-extrabold tracking-tight mt-2 text-slate-100"><%= Receipt.where(business: @businesses).where(submitted_at: Date.current.all_day).count %></p>
+      <p class="text-3xl font-extrabold tracking-tight mt-2 text-slate-100"><%= @today_receipts_count %></p>
     </div>
   </div>
 
