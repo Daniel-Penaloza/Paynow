@@ -67,6 +67,11 @@
     <% end %>
   </section>
 
+  <%# Suscripciones Turbo para actualizaciones en tiempo real del overview %>
+  <% @businesses.each do |business| %>
+    <%= turbo_stream_from "business_#{business.id}_receipts" %>
+  <% end %>
+
   <%# ── Comprobantes recientes ──────────────────────── %>
   <% if @total_receipts > 0 %>
     <section>
@@ -90,7 +95,8 @@
 
       <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl divide-y divide-[#1e2d45]">
         <% @recent_receipts.each do |receipt| %>
-          <div class="flex items-center justify-between px-5 py-3 gap-4">
+          <div id="receipt_<%= receipt.id %>"
+               class="flex items-center justify-between px-5 py-3 gap-4">
             <div class="flex items-center gap-3 min-w-0">
               <%= receipt_status_badge(receipt.verification_status) %>
               <div class="min-w-0">
