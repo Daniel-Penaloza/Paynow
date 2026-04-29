@@ -83,9 +83,9 @@ no tarjetas. El proceso actual para hacer una transferencia es lento y propenso 
 ## Funcionalidades — siguientes iteraciones
 
 - [x] Dashboard de comprobantes con filtros por período y rango de fechas
-- [ ] Contabilidad: suma de comprobantes por día / semana / mes / año
-- [ ] Clientes frecuentes (identificación por datos capturados en comprobante)
-- [ ] Exportar reporte de comprobantes (CSV/PDF)
+- [x] Contabilidad: suma de comprobantes por día / semana / mes / año
+- [x] Clientes frecuentes (identificación por datos capturados en comprobante)
+- [ ] Exportar reporte de comprobantes (CSV/Excel)
 - [ ] Notificación por WhatsApp al dueño del negocio
 - [ ] Monto sugerido editable en la landing page (ej. "Tu total es $450")
 - [ ] Vista de comprobante con status (pendiente / confirmado / rechazado)
@@ -148,7 +148,9 @@ Receipt
 ### Fase 2 — Valor para el Business Owner
 - [x] Dashboard de comprobantes con filtros (Hoy / Esta semana / Este mes / Este año / Rango personalizado)
 - [x] Totales de ingresos verificados por período en dashboard del negocio (Hoy / Semana / Mes / Año)
-- [ ] Clientes frecuentes
+- [x] Clientes frecuentes — formulario opcional en landing con disclaimer + vista agrupada en dashboard
+- [ ] Vistas detalladas de ingresos por período — cada tarjeta de contabilidad (Hoy / Semana / Mes / Año) enlaza a una tabla con todos los comprobantes verificados de ese período
+- [ ] Exportar a Excel desde las vistas detalladas — botón que descarga `.xlsx` con los datos de la tabla
 
 ### Fase 3 — Extracción inteligente de comprobantes (Claude Vision)
 
@@ -189,7 +191,9 @@ Receipt
 
 ### Fase 4 — Pulido y escala
 - [ ] Notificaciones WhatsApp
-- [ ] Exportación de reportes (CSV/PDF)
+- [ ] Exportación de reportes (CSV/Excel)
+  - [ ] Vista detallada de ingresos por período (Hoy / Semana / Mes / Año) con tabla de comprobantes verificados
+  - [ ] Botón "Exportar a Excel" en cada vista detallada → descarga `.xlsx` con: fecha, pagador, banco, referencia, monto
 - [ ] Monto sugerido editable en la landing page (ej. "Tu total es $450")
 - [ ] Planes / suscripción por organización (monetización)
 
@@ -216,8 +220,8 @@ Receipt
 
 Continuar en este orden:
 
-1. **Fase 2 — Clientes frecuentes** — requiere capturar nombre/teléfono en la landing de pago. Implica agregar campos opcionales al formulario de subida de comprobante y una vista en el dashboard que agrupe por pagador.
-2. **Fase 4 — Pulido** — notificaciones WhatsApp, exportación CSV/PDF, monto sugerido en landing.
+1. **Fase 2 — Vistas detalladas de ingresos + exportación Excel** — cada tarjeta de contabilidad (Hoy / Semana / Mes / Año) enlazará a una tabla con los comprobantes verificados de ese período y un botón para descargar `.xlsx`.
+2. **Fase 4 — Pulido** — notificaciones WhatsApp, monto sugerido en landing, planes/suscripción.
 3. **Fase 5 — RSpec** — setup completo de pruebas antes del deploy.
 4. **Deploy en Fly.io** — configurar variables de entorno (`ANTHROPIC_API_KEY`, `SECRET_KEY_BASE`, base de datos en producción).
 
