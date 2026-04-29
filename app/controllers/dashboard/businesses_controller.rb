@@ -7,6 +7,18 @@ class Dashboard::BusinessesController < Dashboard::BaseController
 
   def show
     @recent_receipts = @business.receipts.order(submitted_at: :desc).limit(5)
+
+    receipts = @business.receipts
+    @totals = {
+      today:            receipts.today.total_amount,
+      this_week:        receipts.this_week.total_amount,
+      this_month:       receipts.this_month.total_amount,
+      this_year:        receipts.this_year.total_amount,
+      today_count:      receipts.today.verified.count,
+      this_week_count:  receipts.this_week.verified.count,
+      this_month_count: receipts.this_month.verified.count,
+      this_year_count:  receipts.this_year.verified.count
+    }
   end
 
   def new

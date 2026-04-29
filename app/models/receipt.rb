@@ -23,6 +23,14 @@ class Receipt < ApplicationRecord
   scope :rejected,    -> { where(verification_status: "rejected") }
   scope :unreadable,  -> { where(verification_status: "unreadable") }
 
+  def self.total_amount_cents
+    verified.sum(:amount_cents)
+  end
+
+  def self.total_amount
+    total_amount_cents / 100.0
+  end
+
   def amount
     amount_cents ? amount_cents / 100.0 : nil
   end

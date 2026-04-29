@@ -147,7 +147,8 @@ Receipt
 
 ### Fase 2 — Valor para el Business Owner
 - [x] Dashboard de comprobantes con filtros (Hoy / Esta semana / Este mes / Este año / Rango personalizado)
-- [ ] Contabilidad básica (totales por período)
+- [x] Contabilidad básica desbloqueada — requiere `amount_cents` de Fase 3 ✓
+- [ ] Totales por período en el dashboard (día / semana / mes / año)
 - [ ] Clientes frecuentes
 
 ### Fase 3 — Extracción inteligente de comprobantes (Claude Vision)
