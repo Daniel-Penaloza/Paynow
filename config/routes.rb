@@ -14,7 +14,9 @@ Rails.application.routes.draw do
   namespace :dashboard do
     root "overview#index"
     resources :businesses do
-      resources :receipts, only: %i[index show]
+      resources :receipts, only: %i[index show] do
+        post :reprocess, on: :member
+      end
       get :qr, on: :member
     end
   end

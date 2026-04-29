@@ -23,7 +23,7 @@ class ReceiptVerificationJob < ApplicationJob
     - notes: solo si is_transfer es false o si no puedes leer algún campo importante
   PROMPT
 
-  def perform(receipt_id)
+  def perform(receipt_id, force: false)
     receipt = Receipt.find_by(id: receipt_id)
     return unless receipt&.file&.attached?
 
@@ -35,7 +35,7 @@ class ReceiptVerificationJob < ApplicationJob
     end
 
     result = call_claude(image_data)
-    apply_result(receipt, result)
+    apply_result(receipt, result, force: force)
     broadcast_update(receipt)
   rescue => e
     Rails.logger.error("[ReceiptVerificationJob] Error en receipt #{receipt_id}: #{e.message}")
@@ -102,7 +102,7 @@ class ReceiptVerificationJob < ApplicationJob
     nil
   end
 
-  def apply_result(receipt, result)
+  def apply_result(receipt, result, force: false)
     if result.nil?
       receipt.update!(verification_status: "unreadable", verification_notes: "No se pudo interpretar la respuesta del análisis.")
       return
@@ -118,7 +118,7 @@ class ReceiptVerificationJob < ApplicationJob
 
     transfer_date = result["transfer_date"] ? Date.parse(result["transfer_date"]) : nil
 
-    if transfer_date && transfer_date != Date.current
+    if !force && transfer_date && transfer_date != Date.current
       receipt.update!(
         verification_status: "rejected",
         transfer_date: transfer_date,

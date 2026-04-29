@@ -13,7 +13,17 @@
         <%= @receipt.submitted_at.strftime("%d de %B de %Y, %H:%M hrs") %>
       </p>
     </div>
-    <%= receipt_status_badge(@receipt.verification_status) %>
+    <div class="flex items-center gap-3 shrink-0">
+      <% if %w[rejected unreadable].include?(@receipt.verification_status) %>
+        <%= button_to "↺ Reprocesar",
+              reprocess_dashboard_business_receipt_path(@business, @receipt),
+              method: :post,
+              class: "px-3 py-1.5 rounded-lg border border-amber-500/30 text-amber-400
+                      hover:bg-amber-500/10 text-sm font-medium transition-colors cursor-pointer
+                      bg-transparent" %>
+      <% end %>
+      <%= receipt_status_badge(@receipt.verification_status) %>
+    </div>
   </div>
 
   <%# Datos extraídos por Claude %>

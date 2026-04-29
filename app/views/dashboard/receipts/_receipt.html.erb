@@ -21,8 +21,19 @@
     </div>
   </div>
 
-  <%= link_to "Ver →", dashboard_business_receipt_path(business, receipt),
-        class: "text-sm text-[#6366f1] hover:text-[#818cf8] transition-colors shrink-0 ml-4" %>
+  <div class="flex items-center gap-3 shrink-0 ml-4">
+    <% if %w[rejected unreadable].include?(receipt.verification_status) %>
+      <%= button_to reprocess_dashboard_business_receipt_path(business, receipt),
+            method: :post,
+            form: { data: { turbo: true } },
+            class: "text-xs text-amber-400 hover:text-amber-300 transition-colors cursor-pointer bg-transparent border-none p-0",
+            title: "Reprocesar comprobante" do %>
+        ↺ Reprocesar
+      <% end %>
+    <% end %>
+    <%= link_to "Ver →", dashboard_business_receipt_path(business, receipt),
+          class: "text-sm text-[#6366f1] hover:text-[#818cf8] transition-colors" %>
+  </div>
 </div>
 
 <style>

@@ -30,6 +30,23 @@ class Dashboard::ReceiptsController < Dashboard::BaseController
     @receipt = @business.receipts.find(params[:id])
   end
 
+  def reprocess
+    @receipt = @business.receipts.find(params[:id])
+    @receipt.update!(verification_status: "pending", verification_notes: nil)
+    ReceiptVerificationJob.perform_later(@receipt.id, force: true)
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          "receipt_#{@receipt.id}",
+          partial: "dashboard/receipts/receipt",
+          locals: { receipt: @receipt, business: @business }
+        )
+      end
+      format.html { redirect_to dashboard_business_receipt_path(@business, @receipt) }
+    end
+  end
+
   private
 
   def set_business
