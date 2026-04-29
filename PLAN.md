@@ -163,19 +163,19 @@ Receipt
 6. Turbo Stream notifica al dashboard en tiempo real
 
 #### Base de datos
-- [ ] Migración: agregar `amount_cents` (integer), `transfer_date` (date), `bank_name` (string), `reference_number` (string), `verification_status` (string, default: `pending`), `verification_notes` (text) al modelo `Receipt`
+- [x] Migración: agregar `amount_cents` (integer), `transfer_date` (date), `bank_name` (string), `reference_number` (string), `verification_status` (string, default: `pending`), `verification_notes` (text) al modelo `Receipt`
 
 #### Modelo
-- [ ] Scopes y validaciones nuevas en `Receipt` para los campos extraídos
-- [ ] Callback `after_create_commit` para encolar `ReceiptVerificationJob`
+- [x] Scopes y validaciones nuevas en `Receipt` para los campos extraídos
+- [x] Callback `after_create_commit` para encolar `ReceiptVerificationJob`
 
 #### Job de verificación
-- [ ] Crear `ReceiptVerificationJob` con ActiveJob + Solid Queue
-- [ ] Convertir archivo adjunto a base64 (imágenes PNG/JPG)
-- [ ] Soporte para PDFs: convertir primera página a imagen con `mini_magick` antes de mandar a Claude
-- [ ] Integración con Claude API (vision) — prompt estructurado que devuelve JSON con: `{ is_transfer, transfer_date, amount, bank_name, reference_number, notes }`
-- [ ] Lógica de validación: verificar que sea transferencia + que la fecha sea la actual
-- [ ] Actualizar el `Receipt` con los datos extraídos y el `verification_status` correspondiente
+- [x] Crear `ReceiptVerificationJob` con ActiveJob + Solid Queue
+- [x] Convertir archivo adjunto a base64 (imágenes PNG/JPG)
+- [x] Soporte para PDFs: convertir primera página a imagen con `mini_magick` antes de mandar a Claude
+- [x] Integración con Claude API (vision) — prompt estructurado que devuelve JSON con: `{ is_transfer, transfer_date, amount, bank_name, reference_number, notes }`
+- [x] Lógica de validación: verificar que sea transferencia + que la fecha sea la actual
+- [x] Actualizar el `Receipt` con los datos extraídos y el `verification_status` correspondiente
 
 #### Dashboard
 - [ ] Badge de status en lista de comprobantes (`pending` / `verified` / `rejected` / `unreadable`)
