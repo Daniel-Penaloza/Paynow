@@ -147,8 +147,7 @@ Receipt
 
 ### Fase 2 — Valor para el Business Owner
 - [x] Dashboard de comprobantes con filtros (Hoy / Esta semana / Este mes / Este año / Rango personalizado)
-- [x] Contabilidad básica desbloqueada — requiere `amount_cents` de Fase 3 ✓
-- [ ] Totales por período en el dashboard (día / semana / mes / año)
+- [x] Totales de ingresos verificados por período en dashboard del negocio (Hoy / Semana / Mes / Año)
 - [ ] Clientes frecuentes
 
 ### Fase 3 — Extracción inteligente de comprobantes (Claude Vision)
@@ -185,8 +184,8 @@ Receipt
 - [x] Turbo Stream que actualiza el badge y monto en tiempo real cuando el job termina
 
 #### Contabilidad (Fase 2 desbloqueada por esta fase)
-- [ ] Totales por período en el dashboard usando `amount_cents` + `transfer_date`
-- [ ] Solo contar comprobantes con `verification_status: verified`
+- [x] Totales por período en el dashboard usando `amount_cents` + `transfer_date`
+- [x] Solo contar comprobantes con `verification_status: verified`
 
 ### Fase 4 — Pulido y escala
 - [ ] Notificaciones WhatsApp
@@ -210,6 +209,17 @@ Receipt
 - [x] dnsmasq resolviendo `*.lvh.me → 192.168.68.101` para subdominios desde celular
 - [ ] Configurar DNS manual en celular (`192.168.68.101`) para pruebas end-to-end
 - [ ] Deploy en Fly.io
+
+---
+
+## Próximos pasos (siguiente sesión)
+
+Continuar en este orden:
+
+1. **Fase 2 — Clientes frecuentes** — requiere capturar nombre/teléfono en la landing de pago. Implica agregar campos opcionales al formulario de subida de comprobante y una vista en el dashboard que agrupe por pagador.
+2. **Fase 4 — Pulido** — notificaciones WhatsApp, exportación CSV/PDF, monto sugerido en landing.
+3. **Fase 5 — RSpec** — setup completo de pruebas antes del deploy.
+4. **Deploy en Fly.io** — configurar variables de entorno (`ANTHROPIC_API_KEY`, `SECRET_KEY_BASE`, base de datos en producción).
 
 ---
 
