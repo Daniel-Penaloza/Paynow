@@ -38,6 +38,7 @@ class ReceiptVerificationJob < ApplicationJob
     apply_result(receipt, result, force: force)
     broadcast_update(receipt)
     broadcast_accounting_update(receipt.business)
+    notify_payer(receipt)
   rescue => e
     Rails.logger.error("[ReceiptVerificationJob] Error en receipt #{receipt_id}: #{e.message}")
     receipt&.update!(verification_status: "unreadable", verification_notes: "Error interno al procesar el comprobante.")
@@ -146,6 +147,25 @@ class ReceiptVerificationJob < ApplicationJob
       partial: "dashboard/receipts/receipt",
       locals: { receipt: receipt, business: receipt.business }
     )
+  end
+
+  def notify_payer(receipt)
+    return if receipt.payer_phone.blank?
+
+    to = "whatsapp:+#{receipt.payer_phone.gsub(/\D/, '')}"
+    business_name = receipt.business.name
+
+    message = case receipt.verification_status
+    when "verified"
+      amount_text = receipt.amount ? " de *$#{format('%.2f', receipt.amount)}*" : ""
+      "✅ Tu comprobante#{amount_text} para *#{business_name}* fue verificado correctamente. ¡Gracias!"
+    when "rejected"
+      "❌ Tu comprobante para *#{business_name}* no pudo ser verificado. Motivo: #{receipt.verification_notes}"
+    when "unreadable"
+      "⚠️ No pudimos leer tu comprobante para *#{business_name}*. Por favor envía una imagen más clara."
+    end
+
+    WhatsappReplyJob.perform_later(to, message) if message
   end
 
   def broadcast_accounting_update(business)

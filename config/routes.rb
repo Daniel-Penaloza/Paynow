@@ -30,6 +30,11 @@ Rails.application.routes.draw do
     end
   end
 
+  # Webhook de Twilio para comprobantes por WhatsApp
+  namespace :webhooks do
+    post "twilio", to: "twilio#receive"
+  end
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   root "sessions#new"

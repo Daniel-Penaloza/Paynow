@@ -86,6 +86,9 @@ no tarjetas. El proceso actual para hacer una transferencia es lento y propenso 
 - [x] Contabilidad: suma de comprobantes por día / semana / mes / año
 - [x] Clientes frecuentes (identificación por datos capturados en comprobante)
 - [ ] Exportar reporte de comprobantes (CSV/Excel)
+- [x] Recepción de comprobantes por WhatsApp (Twilio webhook — cliente envía foto al número del negocio)
+- [x] Notificación WhatsApp al cliente (pagador) tras verificación del comprobante
+- [x] Mensajes de error amigables en webhook de WhatsApp
 - [ ] Notificación por WhatsApp al dueño del negocio
 - [ ] Monto sugerido editable en la landing page (ej. "Tu total es $450")
 - [ ] Vista de comprobante con status (pendiente / confirmado / rechazado)
@@ -190,7 +193,7 @@ Receipt
 - [x] Solo contar comprobantes con `verification_status: verified`
 
 ### Fase 4 — Pulido y escala
-- [ ] Notificaciones WhatsApp
+- [x] Integración WhatsApp Business API via Twilio (recepción de comprobantes + notificación al cliente)
 - [ ] Exportación de reportes (CSV/Excel)
   - [ ] Vista detallada de ingresos por período (Hoy / Semana / Mes / Año) con tabla de comprobantes verificados
   - [ ] Botón "Exportar a Excel" en cada vista detallada → descarga `.xlsx` con: fecha, pagador, banco, referencia, monto

@@ -5,6 +5,7 @@ class Public::PaymentsController < ActionController::Base
   before_action :set_business
 
   def show
+    @whatsapp_url = build_whatsapp_url
   end
 
   def submit_receipt
@@ -34,5 +35,13 @@ class Public::PaymentsController < ActionController::Base
     @business = @organization.businesses.find_by!(slug: params[:slug])
   rescue ActiveRecord::RecordNotFound
     render plain: "Negocio no encontrado", status: :not_found
+  end
+
+  def build_whatsapp_url
+    number = ENV["TWILIO_WHATSAPP_NUMBER"].to_s.gsub(/^whatsapp:\+?/, "")
+    return nil if number.blank?
+
+    text = CGI.escape("Comprobante para #{@business.slug}")
+    "https://wa.me/#{number}?text=#{text}"
   end
 end

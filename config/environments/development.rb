@@ -45,6 +45,7 @@ Rails.application.configure do
   config.hosts << "lvh.me"
   config.hosts << /.*\.lvh\.me/
   config.hosts << "192.168.68.101"
+  config.hosts << /[a-z0-9\-]+\.ngrok-free\.app/
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
