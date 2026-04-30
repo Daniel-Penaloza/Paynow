@@ -1,44 +1,45 @@
 class Webhooks::TwilioController < ActionController::Base
   skip_forgery_protection
 
-  HELP_MESSAGE = "Para enviar tu comprobante, escribe primero: *Comprobante para <nombre-del-negocio>* y luego adjunta la imagen."
-
   def receive
-    body    = params[:Body].to_s.strip
-    from    = params[:From].to_s
+    body      = params[:Body].to_s.strip
+    from      = params[:From].to_s
     num_media = params[:NumMedia].to_i
 
     business = resolve_business(body)
 
     if business.nil?
-      reply(from, HELP_MESSAGE)
+      if body.empty?
+        reply(from, "👋 Hola, para enviar tu comprobante de pago usa el botón de WhatsApp que aparece en la página del negocio. Esto nos ayuda a identificar a qué negocio pertenece tu pago.")
+      else
+        reply(from, "🔍 No encontramos el negocio \"#{body.gsub(/comprobante\s+para\s+/i, '').strip}\". Verifica el nombre e intenta de nuevo, o usa el botón de WhatsApp desde la página de pago.")
+      end
       return head :ok
     end
 
     if num_media == 0
-      reply(from, "Recibimos tu mensaje para *#{business.name}* pero no encontramos ninguna imagen. Por favor adjunta la foto de tu comprobante.")
+      reply(from, "📎 Recibimos tu mensaje para *#{business.name}* pero no adjuntaste ninguna imagen. Por favor envía la foto o PDF de tu comprobante de transferencia.")
       return head :ok
     end
 
-    media_url      = params[:MediaUrl0]
-    media_type     = params[:MediaContentType0].to_s
+    media_type = params[:MediaContentType0].to_s
 
     unless media_type.start_with?("image/", "application/pdf")
-      reply(from, "Solo aceptamos imágenes o PDF como comprobante.")
+      reply(from, "📄 El archivo que enviaste no es una imagen ni PDF. Por favor toma una captura de pantalla o foto de tu comprobante y envíala.")
       return head :ok
     end
 
-    receipt = build_receipt(business, from, media_url, media_type)
+    receipt = build_receipt(business, from, params[:MediaUrl0], media_type)
 
     if receipt.nil?
-      reply(from, "No pudimos descargar tu imagen. Intenta de nuevo en un momento.")
+      reply(from, "⚠️ Tuvimos un problema al recibir tu imagen. Espera un momento e intenta enviarla de nuevo.")
       return head :ok
     end
 
     if receipt.save
-      WhatsappReplyJob.perform_later(from, "✅ Comprobante recibido para *#{business.name}*. Lo estamos verificando, te avisamos en un momento.")
+      WhatsappReplyJob.perform_later(from, "⏳ Comprobante recibido para *#{business.name}*. Lo estamos verificando, en un momento te confirmamos.")
     else
-      reply(from, "Hubo un problema al guardar tu comprobante. Intenta de nuevo.")
+      reply(from, "⚠️ No pudimos guardar tu comprobante. Intenta enviarlo de nuevo.")
     end
 
     head :ok
@@ -47,14 +48,19 @@ class Webhooks::TwilioController < ActionController::Base
   private
 
   # Extrae el slug del cuerpo del mensaje.
-  # Acepta: "Comprobante para tacos-el-gordo" o simplemente "tacos-el-gordo"
+  # Acepta: "Comprobante para tacos-el-gordo", "tacos-el-gordo" o "Tacos El Gordo"
   def resolve_business(body)
-    slug = body.downcase
-                .gsub(/comprobante\s+para\s+/i, "")
-                .strip
-                .gsub(/\s+/, "-")
+    return nil if body.blank?
 
-    Business.find_by(slug: slug)
+    normalized = body.downcase
+                     .unicode_normalize(:nfd)
+                     .gsub(/\p{Mn}/, "")
+                     .gsub(/comprobante\s+para\s+/i, "")
+                     .strip
+                     .gsub(/\s+/, "-")
+                     .gsub(/[^a-z0-9\-]/, "")
+
+    Business.find_by(slug: normalized)
   end
 
   def build_receipt(business, from, media_url, media_type)
