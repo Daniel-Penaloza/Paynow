@@ -18,6 +18,7 @@ Rails.application.routes.draw do
         post :reprocess, on: :member
       end
       resources :clients, only: %i[index]
+      resources :incomes, only: %i[index]
       get :qr, on: :member
     end
   end

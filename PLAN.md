@@ -152,8 +152,8 @@ Receipt
 - [x] Dashboard de comprobantes con filtros (Hoy / Esta semana / Este mes / Este año / Rango personalizado)
 - [x] Totales de ingresos verificados por período en dashboard del negocio (Hoy / Semana / Mes / Año)
 - [x] Clientes frecuentes — formulario opcional en landing con disclaimer + vista agrupada en dashboard
-- [ ] Vistas detalladas de ingresos por período — cada tarjeta de contabilidad (Hoy / Semana / Mes / Año) enlaza a una tabla con todos los comprobantes verificados de ese período
-- [ ] Exportar a Excel desde las vistas detalladas — botón que descarga `.xlsx` con los datos de la tabla
+- [x] Vistas detalladas de ingresos por período — cada tarjeta de contabilidad (Hoy / Semana / Mes / Año) enlaza a una tabla con todos los comprobantes verificados de ese período
+- [x] Exportar a Excel desde las vistas detalladas — botón que descarga `.xlsx` con los datos de la tabla
 
 ### Fase 3 — Extracción inteligente de comprobantes (Claude Vision)
 
@@ -195,8 +195,8 @@ Receipt
 ### Fase 4 — Pulido y escala
 - [x] Integración WhatsApp Business API via Twilio (recepción de comprobantes + notificación al cliente)
 - [ ] Exportación de reportes (CSV/Excel)
-  - [ ] Vista detallada de ingresos por período (Hoy / Semana / Mes / Año) con tabla de comprobantes verificados
-  - [ ] Botón "Exportar a Excel" en cada vista detallada → descarga `.xlsx` con: fecha, pagador, banco, referencia, monto
+  - [x] Vista detallada de ingresos por período (Hoy / Semana / Mes / Año) con tabla de comprobantes verificados
+  - [x] Botón "Exportar a Excel" en cada vista detallada → descarga `.xlsx` con: fecha, pagador, banco, referencia, monto
 - [ ] Monto sugerido editable en la landing page (ej. "Tu total es $450")
 - [ ] Planes / suscripción por organización (monetización)
 
