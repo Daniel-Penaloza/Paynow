@@ -3,20 +3,22 @@
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
     <% receipts = business.receipts %>
     <% [
-      { label: "Hoy",         amount: receipts.today.total_amount,      count: receipts.today.verified.count },
-      { label: "Esta semana", amount: receipts.this_week.total_amount,  count: receipts.this_week.verified.count },
-      { label: "Este mes",    amount: receipts.this_month.total_amount, count: receipts.this_month.verified.count },
-      { label: "Este año",    amount: receipts.this_year.total_amount,  count: receipts.this_year.verified.count }
+      { label: "Hoy",         period: "today",      amount: receipts.today.total_amount,      count: receipts.today.verified.count },
+      { label: "Esta semana", period: "this_week",  amount: receipts.this_week.total_amount,  count: receipts.this_week.verified.count },
+      { label: "Este mes",    period: "this_month", amount: receipts.this_month.total_amount, count: receipts.this_month.verified.count },
+      { label: "Este año",    period: "this_year",  amount: receipts.this_year.total_amount,  count: receipts.this_year.verified.count }
     ].each do |period| %>
-      <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl p-4">
-        <p class="text-xs text-slate-500 mb-2"><%= period[:label] %></p>
+      <%= link_to dashboard_business_incomes_path(business, period: period[:period]),
+            class: "bg-[#0f172a] border border-[#1e2d45] rounded-xl p-4 hover:border-[#6366f1]/50
+                    hover:bg-[#0f172a]/80 transition-colors group block" do %>
+        <p class="text-xs text-slate-500 mb-2 group-hover:text-slate-400 transition-colors"><%= period[:label] %></p>
         <p class="text-lg font-bold text-slate-100 leading-none">
           $<%= number_with_delimiter(period[:amount], precision: 2, separator: ".", delimiter: ",") %>
         </p>
-        <p class="text-xs text-slate-600 mt-1.5">
-          <%= period[:count] %> <%= period[:count] == 1 ? "pago" : "pagos" %>
+        <p class="text-xs text-slate-600 mt-1.5 group-hover:text-slate-500 transition-colors">
+          <%= period[:count] %> <%= period[:count] == 1 ? "pago" : "pagos" %> · ver detalle →
         </p>
-      </div>
+      <% end %>
     <% end %>
   </div>
 </section>
