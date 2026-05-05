@@ -39,6 +39,7 @@ class ReceiptVerificationJob < ApplicationJob
     broadcast_update(receipt)
     broadcast_accounting_update(receipt.business)
     notify_payer(receipt)
+    notify_owner(receipt)
   rescue => e
     Rails.logger.error("[ReceiptVerificationJob] Error en receipt #{receipt_id}: #{e.message}")
     receipt&.update!(verification_status: "unreadable", verification_notes: "Error interno al procesar el comprobante.")
@@ -163,6 +164,30 @@ class ReceiptVerificationJob < ApplicationJob
       "❌ Tu comprobante para *#{business_name}* no pudo ser verificado. Motivo: #{receipt.verification_notes}"
     when "unreadable"
       "⚠️ No pudimos leer tu comprobante para *#{business_name}*. Por favor envía una imagen más clara."
+    end
+
+    WhatsappReplyJob.perform_later(to, message) if message
+  end
+
+  def notify_owner(receipt)
+    whatsapp = receipt.business.whatsapp
+    return if whatsapp.blank?
+
+    digits = whatsapp.gsub(/\D/, "")
+    digits = "521#{digits}" if digits.length == 10
+    to = "whatsapp:+#{digits}"
+    business_name = receipt.business.name
+    from_text = receipt.payer_phone.present? ? " de *+#{receipt.payer_phone.gsub(/\D/, '')}*" : ""
+
+    message = case receipt.verification_status
+    when "verified"
+      amount_text = receipt.amount ? " de *$#{format('%.2f', receipt.amount)} MXN*" : ""
+      bank_text   = receipt.bank_name.present? ? " (#{receipt.bank_name})" : ""
+      "💰 Pago recibido en *#{business_name}*#{amount_text}#{bank_text}#{from_text}."
+    when "rejected"
+      "⚠️ Comprobante rechazado en *#{business_name}*#{from_text}. Motivo: #{receipt.verification_notes}"
+    when "unreadable"
+      "⚠️ Comprobante ilegible en *#{business_name}*#{from_text}. No se pudo procesar la imagen."
     end
 
     WhatsappReplyJob.perform_later(to, message) if message
