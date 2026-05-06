@@ -63,21 +63,19 @@
             class: "text-sm text-[#6366f1] hover:text-[#818cf8] transition-colors" %>
     </div>
 
-    <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl divide-y divide-[#1e2d45]
-                <% unless @recent_receipts.any? %>hidden<% end %>"
+    <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl divide-y divide-[#1e2d45]"
          id="receipts_list">
-      <% @recent_receipts.each do |receipt| %>
-        <%= render "dashboard/receipts/receipt", receipt: receipt, business: @business %>
+      <% if @recent_receipts.any? %>
+        <% @recent_receipts.each do |receipt| %>
+          <%= render "dashboard/receipts/receipt", receipt: receipt, business: @business %>
+        <% end %>
+      <% else %>
+        <div id="receipts_empty" class="p-10 text-center">
+          <p class="text-slate-500 text-sm">Aún no hay comprobantes para este negocio.</p>
+          <p class="text-slate-600 text-xs mt-1">Comparte el QR para empezar a recibir pagos.</p>
+        </div>
       <% end %>
     </div>
-
-    <% unless @recent_receipts.any? %>
-      <div id="receipts_empty"
-           class="bg-[#0f172a] border-2 border-dashed border-[#1e2d45] rounded-xl p-10 text-center">
-        <p class="text-slate-500 text-sm">Aún no hay comprobantes para este negocio.</p>
-        <p class="text-slate-600 text-xs mt-1">Comparte el QR para empezar a recibir pagos.</p>
-      </div>
-    <% end %>
   </section>
 
 </div>
