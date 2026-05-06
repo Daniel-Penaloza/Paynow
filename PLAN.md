@@ -199,13 +199,17 @@ Receipt
 - [ ] Planes / suscripción por organización (monetización)
 
 ### Fase 5 — Pruebas con RSpec
-- [ ] Setup de RSpec + FactoryBot + Shoulda Matchers
-- [ ] Model specs: Organization, User, Business, Receipt (validaciones, scopes, callbacks)
-- [ ] Request specs: autenticación, acceso por rol (Super Admin vs Business Owner)
-- [ ] Request specs: CRUD de negocios y comprobantes
-- [ ] Request specs: filtros de comprobantes (period, date_from, date_to)
-- [ ] Request specs: landing page pública (sin login)
-- [ ] Unit specs: `ReceiptVerificationJob` con stubs de Claude API
+- [x] Setup de RSpec + FactoryBot + Shoulda Matchers
+- [x] Remover Minitest (carpeta `test/` eliminada)
+- [x] Model specs: Organization, User, Business, Receipt (validaciones, scopes, callbacks)
+- [x] Helper specs: `ApplicationHelper#receipt_status_badge`
+- [x] Job specs: `ReceiptVerificationJob` con stubs de Claude API, Turbo y WhatsApp
+- [x] Request specs: autenticación (login, logout, cookie de sesión)
+- [x] Request specs: CRUD de negocios con protección de autenticación y autorización
+- [x] Request specs: filtros de comprobantes (period, date_from/date_to), reprocess con Turbo Stream
+- [x] Request specs: landing page pública con subdomain routing (`host!`)
+- [ ] Request specs: Admin controllers (Organizations, Users) — pendiente
+- [ ] Request specs: `Webhooks::TwilioController` — pendiente
 - [ ] System specs (Capybara): flujo completo de subida de comprobante
 - [ ] System specs (Capybara): notificación en tiempo real con Turbo Streams
 
@@ -221,10 +225,11 @@ Receipt
 
 Continuar en este orden:
 
-1. **Fase 2 — Vistas detalladas de ingresos + exportación Excel** — cada tarjeta de contabilidad (Hoy / Semana / Mes / Año) enlazará a una tabla con los comprobantes verificados de ese período y un botón para descargar `.xlsx`.
-2. **Fase 4 — Pulido** — notificaciones WhatsApp, monto sugerido en landing, planes/suscripción.
-3. **Fase 5 — RSpec** — setup completo de pruebas antes del deploy.
-4. **Deploy en Fly.io** — configurar variables de entorno (`ANTHROPIC_API_KEY`, `SECRET_KEY_BASE`, base de datos en producción).
+1. **Fase 5 — RSpec (pendiente)** — completar la cobertura de pruebas:
+   - Request specs de Admin controllers (`Organizations`, `Users`) con protección de `super_admin`
+   - Request spec de `Webhooks::TwilioController` (webhook de Twilio con autenticación HTTP Basic)
+   - System specs con Capybara: flujo de subida de comprobante y notificación en tiempo real
+2. **Deploy en Fly.io** — configurar variables de entorno (`ANTHROPIC_API_KEY`, `TWILIO_*`, `SECRET_KEY_BASE`, base de datos en producción).
 
 ---
 
