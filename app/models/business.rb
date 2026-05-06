@@ -15,7 +15,7 @@ class Business < ApplicationRecord
 
   def public_url
     # Se sobrescribe con la URL real basada en subdominio en producción
-    Rails.application.routes.url_helpers.pay_url(self, host: "#{user.organization.subdomain}.lvh.me", port: 3000)
+    Rails.application.routes.url_helpers.pay_url(slug: slug, host: "#{user.organization.subdomain}.lvh.me", port: 3000)
   end
 
   private

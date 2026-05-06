@@ -3,7 +3,7 @@ FactoryBot.define do
     association :business
     submitted_at        { Time.current }
     verification_status { "pending" }
-    payer_name          { Faker::Name.full_name }
+    payer_name          { Faker::Name.name }
     payer_phone         { "5512345678" }
 
     # Adjunta un archivo de imagen mínimo para satisfacer la validación de presencia
