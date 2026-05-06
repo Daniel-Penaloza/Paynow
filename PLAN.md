@@ -89,8 +89,7 @@ no tarjetas. El proceso actual para hacer una transferencia es lento y propenso 
 - [x] Recepción de comprobantes por WhatsApp (Twilio webhook — cliente envía foto al número del negocio)
 - [x] Notificación WhatsApp al cliente (pagador) tras verificación del comprobante
 - [x] Mensajes de error amigables en webhook de WhatsApp
-- [ ] Notificación por WhatsApp al dueño del negocio
-- [ ] Monto sugerido editable en la landing page (ej. "Tu total es $450")
+- [x] Notificación por WhatsApp al dueño del negocio
 - [ ] Vista de comprobante con status (pendiente / confirmado / rechazado)
 - [ ] Planes / suscripción por organización (si se monetiza)
 - [ ] Suite de pruebas con RSpec (models, requests, system specs)
@@ -193,11 +192,10 @@ Receipt
 - [x] Solo contar comprobantes con `verification_status: verified`
 
 ### Fase 4 — Pulido y escala
-- [x] Integración WhatsApp Business API via Twilio (recepción de comprobantes + notificación al cliente)
+- [x] Integración WhatsApp Business API via Twilio (recepción de comprobantes + notificación al cliente + notificación al dueño)
 - [ ] Exportación de reportes (CSV/Excel)
   - [x] Vista detallada de ingresos por período (Hoy / Semana / Mes / Año) con tabla de comprobantes verificados
   - [x] Botón "Exportar a Excel" en cada vista detallada → descarga `.xlsx` con: fecha, pagador, banco, referencia, monto
-- [ ] Monto sugerido editable en la landing page (ej. "Tu total es $450")
 - [ ] Planes / suscripción por organización (monetización)
 
 ### Fase 5 — Pruebas con RSpec

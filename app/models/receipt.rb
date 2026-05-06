@@ -54,7 +54,11 @@ class Receipt < ApplicationRecord
   end
 
   def broadcast_to_dashboard
-    # Actualiza la lista de comprobantes en business#show
+    broadcast_remove_to(
+      "business_#{business_id}_receipts",
+      target: "receipts_empty"
+    )
+
     broadcast_prepend_to(
       "business_#{business_id}_receipts",
       target: "receipts_list",
