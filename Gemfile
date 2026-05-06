@@ -66,6 +66,15 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # RSpec testing framework
+  gem "rspec-rails"
+
+  # Factories para crear objetos de prueba
+  gem "factory_bot_rails"
+
+  # Datos falsos realistas (nombres, teléfonos, etc.)
+  gem "faker"
 end
 
 group :development do
@@ -77,4 +86,7 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+
+  # Matchers expresivos para modelos y controladores
+  gem "shoulda-matchers"
 end
