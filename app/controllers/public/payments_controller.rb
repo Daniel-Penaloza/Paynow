@@ -6,6 +6,7 @@ class Public::PaymentsController < ActionController::Base
 
   def show
     @whatsapp_url = build_whatsapp_url
+    @submit_path  = build_submit_path
   end
 
   def submit_receipt
@@ -13,8 +14,10 @@ class Public::PaymentsController < ActionController::Base
     @receipt.file.attach(params[:file])
 
     if @receipt.save
-      redirect_to pay_path(@business.slug), notice: "Comprobante enviado correctamente."
+      redirect_to build_show_path, notice: "Comprobante enviado correctamente."
     else
+      @submit_path = build_submit_path
+      @whatsapp_url = build_whatsapp_url
       render :show, status: :unprocessable_entity
     end
   end
@@ -26,7 +29,8 @@ class Public::PaymentsController < ActionController::Base
   end
 
   def set_organization
-    @organization = Organization.find_by!(subdomain: request.subdomain)
+    subdomain = params[:org_subdomain].presence || request.subdomain
+    @organization = Organization.find_by!(subdomain: subdomain)
   rescue ActiveRecord::RecordNotFound
     render plain: "Organización no encontrada", status: :not_found
   end
@@ -35,6 +39,22 @@ class Public::PaymentsController < ActionController::Base
     @business = @organization.businesses.find_by!(slug: params[:slug])
   rescue ActiveRecord::RecordNotFound
     render plain: "Negocio no encontrado", status: :not_found
+  end
+
+  def build_submit_path
+    if params[:org_subdomain].present?
+      dev_submit_receipt_path(org_subdomain: params[:org_subdomain], slug: @business.slug)
+    else
+      submit_receipt_path(@business.slug)
+    end
+  end
+
+  def build_show_path
+    if params[:org_subdomain].present?
+      dev_pay_path(org_subdomain: params[:org_subdomain], slug: @business.slug)
+    else
+      pay_path(@business.slug)
+    end
   end
 
   def build_whatsapp_url

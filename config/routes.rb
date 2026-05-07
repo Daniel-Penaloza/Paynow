@@ -31,6 +31,16 @@ Rails.application.routes.draw do
     end
   end
 
+  # Rutas alternativas para desarrollo — permiten probar la landing pública
+  # sin subdomain (útil con ngrok o cualquier tunnel sin soporte de subdomains).
+  # Solo disponibles en development; no se montan en producción.
+  if Rails.env.development?
+    scope "/dev/pay/:org_subdomain", module: :public do
+      get  "/:slug",         to: "payments#show",           as: :dev_pay
+      post "/:slug/receipt", to: "payments#submit_receipt", as: :dev_submit_receipt
+    end
+  end
+
   # Webhook de Twilio para comprobantes por WhatsApp
   namespace :webhooks do
     post "twilio", to: "twilio#receive"

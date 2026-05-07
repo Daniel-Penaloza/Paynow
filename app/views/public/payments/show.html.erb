@@ -91,7 +91,7 @@
         <p class="text-xs text-slate-500 mt-0.5">Foto o PDF de la transferencia</p>
       </div>
 
-      <%= form_with url: submit_receipt_path(@business.slug),
+      <%= form_with url: @submit_path,
                     method: :post,
                     multipart: true,
                     class: "space-y-3" do |f| %>

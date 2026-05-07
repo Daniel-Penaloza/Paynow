@@ -39,13 +39,30 @@ class Dashboard::BusinessesController < Dashboard::BaseController
   end
 
   def qr
-    @qr = @business.qr_code
+    @qr = RQRCode::QRCode.new(payment_url_for(@business))
   end
 
   private
 
   def set_business
     @business = Current.user.businesses.find(params[:id])
+  end
+
+  # En desarrollo usa el host actual de la request (ngrok, lvh.me, etc.)
+  # para que el QR siempre apunte a una URL accesible desde el dispositivo.
+  # En producción delega al modelo que construye la URL con subdomain real.
+  def payment_url_for(business)
+    if Rails.env.development?
+      dev_pay_url(
+        org_subdomain: business.user.organization.subdomain,
+        slug:          business.slug,
+        host:          request.host,
+        port:          request.port,
+        protocol:      request.protocol
+      )
+    else
+      business.public_url
+    end
   end
 
   def business_params

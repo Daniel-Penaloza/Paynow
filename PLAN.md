@@ -208,28 +208,22 @@ Receipt
 - [x] Request specs: CRUD de negocios con protección de autenticación y autorización
 - [x] Request specs: filtros de comprobantes (period, date_from/date_to), reprocess con Turbo Stream
 - [x] Request specs: landing page pública con subdomain routing (`host!`)
-- [ ] Request specs: Admin controllers (Organizations, Users) — pendiente
-- [ ] Request specs: `Webhooks::TwilioController` — pendiente
-- [ ] System specs (Capybara): flujo completo de subida de comprobante
-- [ ] System specs (Capybara): notificación en tiempo real con Turbo Streams
+- [x] Request specs: Admin controllers (Organizations, Users) con protección de `super_admin`
+- [x] Request specs: `Webhooks::TwilioController`
+- [x] System specs (Capybara): flujo completo de subida de comprobante
+- [x] System specs (Capybara): suscripción Turbo Stream + badges de status + contabilidad
 
 ### Infraestructura de desarrollo
 - [x] Servidor enlazado a `0.0.0.0` para acceso desde red local
 - [x] dnsmasq resolviendo `*.lvh.me → 192.168.68.101` para subdominios desde celular
-- [ ] Configurar DNS manual en celular (`192.168.68.101`) para pruebas end-to-end
+- [x] Pruebas end-to-end desde celular vía ngrok (ruta `/dev/pay/:org_subdomain/:slug`)
 - [ ] Deploy en Fly.io
 
 ---
 
 ## Próximos pasos (siguiente sesión)
 
-Continuar en este orden:
-
-1. **Fase 5 — RSpec (pendiente)** — completar la cobertura de pruebas:
-   - Request specs de Admin controllers (`Organizations`, `Users`) con protección de `super_admin`
-   - Request spec de `Webhooks::TwilioController` (webhook de Twilio con autenticación HTTP Basic)
-   - System specs con Capybara: flujo de subida de comprobante y notificación en tiempo real
-2. **Deploy en Fly.io** — configurar variables de entorno (`ANTHROPIC_API_KEY`, `TWILIO_*`, `SECRET_KEY_BASE`, base de datos en producción).
+1. **Deploy en Fly.io** — configurar variables de entorno (`ANTHROPIC_API_KEY`, `TWILIO_*`, `SECRET_KEY_BASE`, base de datos en producción).
 
 ---
 
