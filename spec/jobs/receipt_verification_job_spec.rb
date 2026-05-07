@@ -196,12 +196,16 @@ RSpec.describe ReceiptVerificationJob, type: :job do
   end
 
   # ─── notify_payer: notificaciones WhatsApp ───────────────────────────────────
+  # Aislamos notify_payer stubeando notify_owner para que las aserciones
+  # solo cuenten las llamadas dirigidas al pagador, no al dueño del negocio.
   describe "notificaciones WhatsApp (notify_payer)" do
+
+    before { allow(job).to receive(:notify_owner) }
 
     context "cuando el pagador no tiene teléfono registrado" do
       let(:receipt) { create(:receipt, business: business, payer_phone: "") }
 
-      it "no encola ningún mensaje de WhatsApp" do
+      it "no encola ningún mensaje al pagador" do
         job.perform(receipt.id)
         expect(WhatsappReplyJob).not_to have_received(:perform_later)
       end
@@ -210,13 +214,11 @@ RSpec.describe ReceiptVerificationJob, type: :job do
     context "cuando el comprobante queda verificado" do
       it "encola un mensaje de WhatsApp al pagador" do
         job.perform(receipt.id)
-        # have_received verifica que el stub fue llamado con cualquier argumento
-        expect(WhatsappReplyJob).to have_received(:perform_later)
+        expect(WhatsappReplyJob).to have_received(:perform_later).once
       end
 
       it "el mensaje incluye el monto y el nombre del negocio" do
         job.perform(receipt.id)
-        # with verifica los argumentos exactos con los que fue llamado
         expect(WhatsappReplyJob).to have_received(:perform_later).with(
           anything,
           include("500.00", business.name)
