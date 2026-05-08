@@ -4,14 +4,12 @@ require "rails_helper"
 # type: :helper activa el contexto de vista — nos da acceso a content_tag,
 # link_to y demás helpers de ActionView sin necesidad de un controlador real.
 RSpec.describe ApplicationHelper, type: :helper do
-
   # ─── receipt_status_badge ────────────────────────────────────────────────────
   # Este helper genera un <span> con estilos distintos según el status del comprobante.
   # Probamos dos cosas por cada status:
   #   1. Que el texto (label) sea el correcto
   #   2. Que las clases CSS correspondan al color del estado
   describe "#receipt_status_badge" do
-
     context "cuando el status es 'verified'" do
       subject(:html) { helper.receipt_status_badge("verified") }
 

@@ -3,7 +3,7 @@ class Dashboard::ClientsController < Dashboard::BaseController
 
   def index
     @clients = @business.receipts
-                        .where.not(payer_phone: [nil, ""])
+                        .where.not(payer_phone: [ nil, "" ])
                         .verified
                         .select("payer_name, payer_phone, COUNT(*) AS receipt_count, SUM(amount_cents) AS total_cents, MAX(submitted_at) AS last_seen")
                         .group(:payer_phone, :payer_name)

@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe Business, type: :model do
-
   # ─── Asociaciones ────────────────────────────────────────────────────────────
   describe "asociaciones" do
     it { is_expected.to belong_to(:user) }

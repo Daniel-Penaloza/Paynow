@@ -4,7 +4,6 @@ require "rails_helper"
 # Los usuarios viven anidados bajo organizaciones para create/new,
 # pero tienen rutas propias para edit/update/destroy.
 RSpec.describe "Admin::Users", type: :request do
-
   let(:super_admin)  { create(:user, :super_admin) }
   let(:organization) { create(:organization) }
   let(:user)         { create(:user, organization: organization) }
@@ -36,7 +35,6 @@ RSpec.describe "Admin::Users", type: :request do
 
   # ─── GET /admin/organizations/:organization_id/users/new ─────────────────────
   describe "GET /admin/organizations/:organization_id/users/new" do
-
     it "devuelve 200" do
       get new_admin_organization_user_path(organization)
       expect(response).to have_http_status(:ok)
@@ -45,7 +43,6 @@ RSpec.describe "Admin::Users", type: :request do
 
   # ─── POST /admin/organizations/:organization_id/users ────────────────────────
   describe "POST /admin/organizations/:organization_id/users" do
-
     let(:params_validos) do
       {
         user: {
@@ -84,7 +81,6 @@ RSpec.describe "Admin::Users", type: :request do
 
   # ─── GET /admin/users/:id/edit ────────────────────────────────────────────────
   describe "GET /admin/users/:id/edit" do
-
     it "devuelve 200" do
       get edit_admin_user_path(user)
       expect(response).to have_http_status(:ok)
@@ -93,7 +89,6 @@ RSpec.describe "Admin::Users", type: :request do
 
   # ─── PATCH /admin/users/:id ───────────────────────────────────────────────────
   describe "PATCH /admin/users/:id" do
-
     context "con email válido" do
       it "actualiza el usuario y redirige al show de la org" do
         patch admin_user_path(user), params: {
@@ -127,7 +122,6 @@ RSpec.describe "Admin::Users", type: :request do
 
   # ─── DELETE /admin/users/:id ──────────────────────────────────────────────────
   describe "DELETE /admin/users/:id" do
-
     it "elimina el usuario y redirige al show de la org" do
       user
 

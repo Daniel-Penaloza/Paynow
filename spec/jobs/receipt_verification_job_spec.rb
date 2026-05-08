@@ -4,7 +4,6 @@ require "rails_helper"
 # La regla de oro: nunca llamar APIs externas reales en pruebas.
 # Usamos "double" y "allow" para reemplazar llamadas externas con respuestas controladas.
 RSpec.describe ReceiptVerificationJob, type: :job do
-
   # ─── Helpers compartidos ─────────────────────────────────────────────────────
 
   # subject es la instancia del job que usaremos en todos los ejemplos
@@ -40,7 +39,6 @@ RSpec.describe ReceiptVerificationJob, type: :job do
 
   # ─── perform: flujo principal ────────────────────────────────────────────────
   describe "#perform" do
-
     context "cuando el receipt no existe" do
       it "termina sin error" do
         # Pasamos un ID que no existe — el job debe ignorarlo silenciosamente
@@ -110,7 +108,6 @@ RSpec.describe ReceiptVerificationJob, type: :job do
   # apply_result es privado, lo probamos a través de perform controlando
   # lo que devuelve call_claude (el stub del before de arriba)
   describe "lógica de verificación (apply_result)" do
-
     context "cuando Claude devuelve nil (respuesta inválida o no parseada)" do
       before { allow(job).to receive(:call_claude).and_return(nil) }
 
@@ -199,7 +196,6 @@ RSpec.describe ReceiptVerificationJob, type: :job do
   # Aislamos notify_payer stubeando notify_owner para que las aserciones
   # solo cuenten las llamadas dirigidas al pagador, no al dueño del negocio.
   describe "notificaciones WhatsApp (notify_payer)" do
-
     before { allow(job).to receive(:notify_owner) }
 
     context "cuando el pagador no tiene teléfono registrado" do

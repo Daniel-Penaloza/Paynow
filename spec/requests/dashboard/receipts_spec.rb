@@ -6,7 +6,6 @@ require "rails_helper"
 #   - La acción `reprocess` encola un job y responde con Turbo Stream o redirect
 #   - Toda acción requiere autenticación y que el negocio pertenezca al usuario
 RSpec.describe "Dashboard::Receipts", type: :request do
-
   let(:user)     { create(:user) }
   let(:business) { create(:business, user: user) }
 
@@ -20,7 +19,6 @@ RSpec.describe "Dashboard::Receipts", type: :request do
 
   # ─── GET /dashboard/businesses/:business_id/receipts — índice ────────────────
   describe "GET /dashboard/businesses/:business_id/receipts" do
-
     it "devuelve 200" do
       get dashboard_business_receipts_path(business)
       expect(response).to have_http_status(:ok)
@@ -55,7 +53,6 @@ RSpec.describe "Dashboard::Receipts", type: :request do
 
   # ─── GET /dashboard/businesses/:business_id/receipts/:id — detalle ───────────
   describe "GET /dashboard/businesses/:business_id/receipts/:id" do
-
     # Usamos :verified para que la vista muestre payer_name.
     # El show.html.erb solo renderiza detalles (incluyendo payer_name) cuando
     # verification_status != "pending".
@@ -74,7 +71,6 @@ RSpec.describe "Dashboard::Receipts", type: :request do
 
   # ─── POST /dashboard/businesses/:business_id/receipts/:id/reprocess ──────────
   describe "POST reprocess" do
-
     let!(:receipt) { create(:receipt, :verified, business: business) }
 
     # Stub del job para no ejecutarlo realmente

@@ -1,0 +1,91 @@
+<%
+  unlimited      = receipt_limit == Float::INFINITY
+  pct            = unlimited ? 0 : [(monthly_receipts.to_f / receipt_limit * 100).round, 100].min
+  near_limit     = !unlimited && pct >= 80
+  over_limit     = !unlimited && monthly_receipts >= receipt_limit
+
+  bar_color =
+    if over_limit   then "bg-red-500"
+    elsif near_limit then "bg-amber-400"
+    else                  "bg-[#6366f1]"
+    end
+
+  businesses_used  = organization.businesses.count
+  biz_pct          = [(businesses_used.to_f / business_limit * 100).round, 100].min
+  biz_over         = businesses_used >= business_limit
+  biz_bar_color    = biz_over ? "bg-red-500" : "bg-[#6366f1]"
+
+  plan_label = { "free" => "Free", "basic" => "Básico", "pro" => "Pro" }[organization.plan]
+%>
+
+<%# ── Banner de aviso (< 20% restante) ───────────────────────────────────── %>
+<% if over_limit %>
+  <div class="bg-red-950 border border-red-700 rounded-xl px-5 py-3.5 flex items-start gap-3">
+    <svg class="w-4 h-4 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+    </svg>
+    <p class="text-sm text-red-300">
+      <span class="font-semibold">Límite alcanzado.</span>
+      Ya no se pueden recibir más comprobantes este mes con tu plan <%= plan_label %>.
+    </p>
+  </div>
+<% elsif near_limit %>
+  <div class="bg-amber-950 border border-amber-700 rounded-xl px-5 py-3.5 flex items-start gap-3">
+    <svg class="w-4 h-4 text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+    </svg>
+    <p class="text-sm text-amber-300">
+      <span class="font-semibold">Cuota casi agotada.</span>
+      Te quedan <%= receipt_limit - monthly_receipts %> comprobantes disponibles este mes.
+    </p>
+  </div>
+<% end %>
+
+<%# ── Widget ──────────────────────────────────────────────────────────────── %>
+<div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl px-5 py-4 space-y-4">
+
+  <div class="flex items-center justify-between">
+    <p class="text-xs font-bold tracking-widest uppercase text-slate-500">Uso del plan</p>
+    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full
+                 bg-[#6366f1]/15 text-[#818cf8] border border-[#6366f1]/30">
+      <%= plan_label %>
+    </span>
+  </div>
+
+  <%# Comprobantes este mes %>
+  <div class="space-y-1.5">
+    <div class="flex items-center justify-between text-sm">
+      <span class="text-slate-400">Comprobantes este mes</span>
+      <span class="font-semibold <%= over_limit ? 'text-red-400' : near_limit ? 'text-amber-400' : 'text-slate-100' %>">
+        <% if unlimited %>
+          <%= monthly_receipts %> / ∞
+        <% else %>
+          <%= monthly_receipts %> / <%= receipt_limit %>
+        <% end %>
+      </span>
+    </div>
+    <% unless unlimited %>
+      <div class="h-1.5 bg-[#1e2d45] rounded-full overflow-hidden">
+        <div class="h-full <%= bar_color %> rounded-full transition-all"
+             style="width: <%= pct %>%"></div>
+      </div>
+    <% end %>
+  </div>
+
+  <%# Negocios %>
+  <div class="space-y-1.5">
+    <div class="flex items-center justify-between text-sm">
+      <span class="text-slate-400">Negocios</span>
+      <span class="font-semibold <%= biz_over ? 'text-red-400' : 'text-slate-100' %>">
+        <%= businesses_used %> / <%= business_limit %>
+      </span>
+    </div>
+    <div class="h-1.5 bg-[#1e2d45] rounded-full overflow-hidden">
+      <div class="h-full <%= biz_bar_color %> rounded-full transition-all"
+           style="width: <%= biz_pct %>%"></div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,205 @@
+<% content_for :title, "Mi suscripción" %>
+
+<%
+  plan_label  = { "free" => "Free", "basic" => "Básico", "pro" => "Pro" }[@organization.plan]
+  unlimited   = @receipt_limit == Float::INFINITY
+  receipt_pct = unlimited ? 0 : [(@monthly_receipts.to_f / @receipt_limit * 100).round, 100].min
+  biz_used    = @organization.businesses.count
+  biz_pct     = [(biz_used.to_f / @business_limit * 100).round, 100].min
+%>
+
+<div class="space-y-8 max-w-2xl">
+
+  <%# ── Header ─────────────────────────────────────── %>
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight">Mi suscripción</h1>
+    <p class="text-slate-500 text-sm mt-1">Detalle de tu plan actual y uso del mes.</p>
+  </div>
+
+  <%# ── Plan actual ─────────────────────────────────── %>
+  <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl px-6 py-5 space-y-5">
+
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-xs font-bold tracking-widest uppercase text-slate-500 mb-1">Plan actual</p>
+        <p class="text-xl font-bold text-slate-100"><%= plan_label %></p>
+      </div>
+      <% status_styles = {
+           "trialing"  => "bg-amber-500/15 text-amber-400 border-amber-500/30",
+           "active"    => "bg-green-500/15 text-green-400 border-green-500/30",
+           "inactive"  => "bg-red-500/15   text-red-400   border-red-500/30"
+         }[@organization.plan_status] %>
+      <% status_label = { "trialing" => "En prueba", "active" => "Activo", "inactive" => "Inactivo" }[@organization.plan_status] %>
+      <span class="px-3 py-1 rounded-full text-xs font-semibold border <%= status_styles %>">
+        <%= status_label %>
+      </span>
+    </div>
+
+    <%# Fechas %>
+    <% if @organization.trial_ends_at.present? || @organization.current_period_ends_at.present? %>
+      <div class="grid grid-cols-2 gap-4 pt-4 border-t border-[#1e2d45] text-sm">
+        <% if @organization.trial_ends_at.present? %>
+          <div>
+            <p class="text-[11px] font-bold tracking-[0.06em] uppercase text-slate-500 mb-1">Fin del período de prueba</p>
+            <p class="text-slate-300"><%= @organization.trial_ends_at.strftime("%-d %b %Y") %></p>
+          </div>
+        <% end %>
+        <% if @organization.current_period_ends_at.present? %>
+          <div>
+            <p class="text-[11px] font-bold tracking-[0.06em] uppercase text-slate-500 mb-1">Período activo hasta</p>
+            <p class="text-slate-300"><%= @organization.current_period_ends_at.strftime("%-d %b %Y") %></p>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+  </div>
+
+  <%# ── Uso del mes ─────────────────────────────────── %>
+  <div class="bg-[#0f172a] border border-[#1e2d45] rounded-xl px-6 py-5 space-y-5">
+
+    <p class="text-xs font-bold tracking-widest uppercase text-slate-500">Uso este mes</p>
+
+    <%# Comprobantes %>
+    <div class="space-y-2">
+      <div class="flex items-center justify-between text-sm">
+        <span class="text-slate-400">Comprobantes recibidos</span>
+        <span class="font-semibold text-slate-100">
+          <% if unlimited %>
+            <%= @monthly_receipts %> / ∞
+          <% else %>
+            <%= @monthly_receipts %> / <%= @receipt_limit %>
+          <% end %>
+        </span>
+      </div>
+      <% unless unlimited %>
+        <div class="h-2 bg-[#1e2d45] rounded-full overflow-hidden">
+          <div class="h-full rounded-full transition-all
+                      <%= receipt_pct >= 100 ? 'bg-red-500' : receipt_pct >= 80 ? 'bg-amber-400' : 'bg-[#6366f1]' %>"
+               style="width: <%= receipt_pct %>%"></div>
+        </div>
+        <p class="text-xs text-slate-500">
+          <% remaining = @receipt_limit - @monthly_receipts %>
+          <% if remaining <= 0 %>
+            Límite alcanzado. Los nuevos comprobantes serán rechazados.
+          <% else %>
+            Te quedan <span class="text-slate-300 font-medium"><%= remaining %></span> comprobantes disponibles este mes.
+          <% end %>
+        </p>
+      <% end %>
+    </div>
+
+    <%# Negocios %>
+    <div class="space-y-2">
+      <div class="flex items-center justify-between text-sm">
+        <span class="text-slate-400">Negocios registrados</span>
+        <span class="font-semibold text-slate-100"><%= biz_used %> / <%= @business_limit %></span>
+      </div>
+      <div class="h-2 bg-[#1e2d45] rounded-full overflow-hidden">
+        <div class="h-full rounded-full transition-all
+                    <%= biz_used >= @business_limit ? 'bg-red-500' : 'bg-[#6366f1]' %>"
+             style="width: <%= biz_pct %>%"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <%# ── Planes disponibles ──────────────────────────── %>
+  <div class="space-y-3">
+    <p class="text-xs font-bold tracking-widest uppercase text-slate-500">Planes disponibles</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+      <%# Plan Básico %>
+      <div class="bg-[#0f172a] border <%= @organization.plan == 'basic' ? 'border-[#6366f1]' : 'border-[#1e2d45]' %>
+                  rounded-xl px-5 py-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <p class="font-semibold text-slate-100">Básico</p>
+          <p class="text-sm font-bold text-slate-100">$199 <span class="text-slate-500 font-normal text-xs">MXN/mes</span></p>
+        </div>
+        <ul class="space-y-1.5 text-sm text-slate-400">
+          <li class="flex items-center gap-2">
+            <svg class="w-3.5 h-3.5 text-[#6366f1] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+            1 negocio
+          </li>
+          <li class="flex items-center gap-2">
+            <svg class="w-3.5 h-3.5 text-[#6366f1] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+            500 comprobantes/mes
+          </li>
+          <li class="flex items-center gap-2">
+            <svg class="w-3.5 h-3.5 text-[#6366f1] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+            WhatsApp + Dashboard + Excel
+          </li>
+        </ul>
+        <% if @organization.plan == "basic" %>
+          <span class="inline-block w-full text-center text-xs font-semibold text-[#6366f1] py-2
+                       border border-[#6366f1]/40 rounded-lg">Plan actual</span>
+        <% else %>
+          <button disabled
+                  class="w-full py-2 rounded-lg text-sm font-semibold text-slate-400
+                         border border-[#1e2d45] cursor-not-allowed opacity-50">
+            Próximamente
+          </button>
+        <% end %>
+      </div>
+
+      <%# Plan Pro %>
+      <div class="bg-[#0f172a] border <%= @organization.plan == 'pro' ? 'border-[#6366f1]' : 'border-[#1e2d45]' %>
+                  rounded-xl px-5 py-4 space-y-3 relative">
+        <div class="absolute -top-2.5 left-4">
+          <span class="bg-[#6366f1] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+            Recomendado
+          </span>
+        </div>
+        <div class="flex items-center justify-between pt-1">
+          <p class="font-semibold text-slate-100">Pro</p>
+          <p class="text-sm font-bold text-slate-100">$349 <span class="text-slate-500 font-normal text-xs">MXN/mes</span></p>
+        </div>
+        <ul class="space-y-1.5 text-sm text-slate-400">
+          <li class="flex items-center gap-2">
+            <svg class="w-3.5 h-3.5 text-[#6366f1] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+            Hasta 5 negocios
+          </li>
+          <li class="flex items-center gap-2">
+            <svg class="w-3.5 h-3.5 text-[#6366f1] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+            Comprobantes ilimitados
+          </li>
+          <li class="flex items-center gap-2">
+            <svg class="w-3.5 h-3.5 text-[#6366f1] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+            Todo lo del Básico
+          </li>
+        </ul>
+        <% if @organization.plan == "pro" %>
+          <span class="inline-block w-full text-center text-xs font-semibold text-[#6366f1] py-2
+                       border border-[#6366f1]/40 rounded-lg">Plan actual</span>
+        <% else %>
+          <button disabled
+                  class="w-full py-2 rounded-lg text-sm font-semibold text-slate-400
+                         border border-[#1e2d45] cursor-not-allowed opacity-50">
+            Próximamente
+          </button>
+        <% end %>
+      </div>
+
+    </div>
+
+    <p class="text-xs text-slate-600 text-center">
+      El cobro estará disponible próximamente. Contacta a
+      <a href="mailto:hola@paynow.mx" class="text-[#6366f1] hover:text-[#818cf8]">hola@paynow.mx</a>
+      para hacer upgrade manualmente.
+    </p>
+  </div>
+
+</div>

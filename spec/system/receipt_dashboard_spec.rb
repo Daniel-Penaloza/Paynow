@@ -12,7 +12,6 @@ require "rails_helper"
 # (ReceiptVerificationJob spec verifica que broadcast_update y
 # broadcast_accounting_update son invocados con los argumentos correctos).
 RSpec.describe "Dashboard de comprobantes", type: :system do
-
   let(:user)     { create(:user) }
   let(:business) { create(:business, user: user) }
 
@@ -29,7 +28,6 @@ RSpec.describe "Dashboard de comprobantes", type: :system do
 
   # ─── Lista de comprobantes ────────────────────────────────────────────────
   describe "lista de comprobantes" do
-
     it "muestra el badge 'Analizando…' para comprobantes en estado pending" do
       create(:receipt, business: business)
       visit dashboard_business_path(business)
@@ -72,7 +70,6 @@ RSpec.describe "Dashboard de comprobantes", type: :system do
 
   # ─── Suscripción Turbo Stream ─────────────────────────────────────────────
   describe "suscripción en tiempo real" do
-
     it "incluye el tag turbo-cable-stream-source para recibir actualizaciones en vivo" do
       visit dashboard_business_path(business)
 
@@ -85,7 +82,6 @@ RSpec.describe "Dashboard de comprobantes", type: :system do
 
   # ─── Contabilidad ─────────────────────────────────────────────────────────
   describe "totales contables" do
-
     it "suma solo los comprobantes verificados" do
       create(:receipt, :verified,  business: business, amount_cents: 20_000)
       create(:receipt, :verified,  business: business, amount_cents: 30_000)
@@ -108,7 +104,6 @@ RSpec.describe "Dashboard de comprobantes", type: :system do
 
   # ─── Botón de reprocesar ──────────────────────────────────────────────────
   describe "reprocesar comprobante" do
-
     it "muestra el botón reprocesar en comprobantes rechazados" do
       create(:receipt, :rejected, business: business)
       visit dashboard_business_path(business)

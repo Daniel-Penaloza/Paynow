@@ -8,7 +8,7 @@ period_labels = {
 }
 
 wb.add_worksheet(name: "Ingresos #{period_labels[@period]}") do |sheet|
-  sheet.add_row ["Fecha transferencia", "Fecha subida", "Pagador", "Banco", "Referencia", "Monto"]
+  sheet.add_row [ "Fecha transferencia", "Fecha subida", "Pagador", "Banco", "Referencia", "Monto" ]
 
   @receipts.each do |receipt|
     sheet.add_row [
@@ -22,7 +22,7 @@ wb.add_worksheet(name: "Ingresos #{period_labels[@period]}") do |sheet|
   end
 
   sheet.add_row []
-  sheet.add_row ["", "", "", "", "TOTAL", @total_amount]
+  sheet.add_row [ "", "", "", "", "TOTAL", @total_amount ]
 
   sheet.column_widths 16, 14, 28, 20, 22, 14
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_29_063135) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_08_030123) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -61,6 +61,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_29_063135) do
     t.string "subdomain"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "plan", default: "free", null: false
+    t.string "plan_status", default: "trialing", null: false
+    t.date "trial_ends_at"
+    t.date "current_period_ends_at"
     t.index ["subdomain"], name: "index_organizations_on_subdomain", unique: true
   end
 
