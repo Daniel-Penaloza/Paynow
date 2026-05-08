@@ -23,6 +23,30 @@
   <body class="bg-[#060a14] text-slate-100 antialiased min-h-dvh">
 
     <%# ── Flash ──────────────────────────────────────── %>
+    <% if alert.present? %>
+      <div id="flash-alert"
+           class="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-up
+                  bg-red-950 border border-red-700 text-red-300
+                  rounded-2xl px-5 py-3 text-sm font-medium shadow-xl
+                  flex items-center gap-2 whitespace-nowrap
+                  transition-opacity duration-500">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        </svg>
+        <%= alert %>
+      </div>
+      <script>
+        (function() {
+          var el = document.getElementById('flash-alert');
+          if (!el) return;
+          setTimeout(function() {
+            el.style.opacity = '0';
+            setTimeout(function() { el.remove(); }, 500);
+          }, 5000);
+        })();
+      </script>
+    <% end %>
+
     <% if notice.present? %>
       <div id="flash-notice"
            class="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-up

@@ -15,6 +15,72 @@
                   hover:border-slate-500 hover:text-slate-200 transition-colors shrink-0" %>
   </div>
 
+  <%# ── Plan y uso ─────────────────────────────────── %>
+  <section class="bg-[#0f172a] border border-[#1e2d45] rounded-xl px-6 py-5 space-y-4">
+    <div class="flex items-center justify-between">
+      <h2 class="text-base font-semibold text-slate-100">Plan y uso</h2>
+      <%= link_to "Cambiar plan", edit_admin_organization_path(@organization),
+            class: "text-sm font-medium text-[#6366f1] hover:text-[#818cf8] transition-colors" %>
+    </div>
+
+    <%# Badges de plan y status %>
+    <div class="flex items-center gap-3 flex-wrap">
+      <% plan_label = { "free" => "Free", "basic" => "Básico", "pro" => "Pro" }[@organization.plan] %>
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+                   bg-[#6366f1]/15 text-[#818cf8] border border-[#6366f1]/30">
+        <%= plan_label %>
+      </span>
+
+      <% status_styles = {
+           "trialing"  => "bg-amber-500/15 text-amber-400 border-amber-500/30",
+           "active"    => "bg-green-500/15 text-green-400 border-green-500/30",
+           "inactive"  => "bg-red-500/15 text-red-400 border-red-500/30"
+         }[@organization.plan_status] %>
+      <% status_label = { "trialing" => "En prueba", "active" => "Activo", "inactive" => "Inactivo" }[@organization.plan_status] %>
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border <%= status_styles %>">
+        <%= status_label %>
+      </span>
+    </div>
+
+    <%# Fechas %>
+    <div class="grid grid-cols-2 gap-4 text-sm">
+      <div>
+        <p class="text-[11px] font-bold tracking-[0.06em] uppercase text-slate-500 mb-1">Fin del trial</p>
+        <p class="text-slate-300">
+          <%= @organization.trial_ends_at&.strftime("%-d %b %Y") || "—" %>
+        </p>
+      </div>
+      <div>
+        <p class="text-[11px] font-bold tracking-[0.06em] uppercase text-slate-500 mb-1">Período actual hasta</p>
+        <p class="text-slate-300">
+          <%= @organization.current_period_ends_at&.strftime("%-d %b %Y") || "—" %>
+        </p>
+      </div>
+    </div>
+
+    <%# Uso del mes %>
+    <% receipt_limit = Organization::PLAN_LIMITS[@organization.plan][:receipts_per_month] %>
+    <% business_limit = Organization::PLAN_LIMITS[@organization.plan][:businesses] %>
+    <div class="grid grid-cols-2 gap-4 pt-2 border-t border-[#1e2d45]">
+      <div>
+        <p class="text-[11px] font-bold tracking-[0.06em] uppercase text-slate-500 mb-1">Negocios</p>
+        <p class="text-slate-100 font-semibold">
+          <%= @businesses_count %> / <%= business_limit %>
+        </p>
+      </div>
+      <div>
+        <p class="text-[11px] font-bold tracking-[0.06em] uppercase text-slate-500 mb-1">Comprobantes este mes</p>
+        <p class="text-slate-100 font-semibold">
+          <% if receipt_limit == Float::INFINITY %>
+            <%= @monthly_receipts %> / ∞
+          <% else %>
+            <%= @monthly_receipts %> / <%= receipt_limit %>
+          <% end %>
+        </p>
+      </div>
+    </div>
+  </section>
+
   <%# ── Usuarios ────────────────────────────────────── %>
   <section>
     <div class="flex items-center justify-between mb-4">

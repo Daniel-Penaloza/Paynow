@@ -7,6 +7,11 @@ class Admin::OrganizationsController < Admin::BaseController
 
   def show
     @users = @organization.users
+    @businesses_count  = @organization.businesses.count
+    @monthly_receipts  = @organization.businesses
+                           .joins(:receipts)
+                           .where(receipts: { created_at: Date.current.beginning_of_month.. })
+                           .count
   end
 
   def new
@@ -45,6 +50,7 @@ class Admin::OrganizationsController < Admin::BaseController
   end
 
   def organization_params
-    params.require(:organization).permit(:name, :subdomain)
+    params.require(:organization).permit(:name, :subdomain, :plan, :plan_status,
+                                         :trial_ends_at, :current_period_ends_at)
   end
 end

@@ -97,6 +97,24 @@ RSpec.describe "Admin::Organizations", type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include(organization.name)
     end
+
+    it "muestra el plan y status de la organización" do
+      get admin_organization_path(organization)
+      expect(response.body).to include("Plan y uso")
+      expect(response.body).to include("Free")
+      expect(response.body).to include("Activo")
+    end
+
+    it "muestra el uso del mes (negocios y comprobantes)" do
+      user     = create(:user, :business_owner, organization: organization)
+      business = create(:business, user: user)
+      create(:receipt, business: business, created_at: Time.current)
+
+      get admin_organization_path(organization)
+
+      expect(response.body).to include("Negocios")
+      expect(response.body).to include("Comprobantes este mes")
+    end
   end
 
   # ─── GET /admin/organizations/:id/edit ───────────────────────────────────────
@@ -127,6 +145,34 @@ RSpec.describe "Admin::Organizations", type: :request do
           organization: { name: "" }
         }
         expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "asignando plan manualmente" do
+      it "actualiza plan y plan_status" do
+        fecha = 30.days.from_now.to_date
+        patch admin_organization_path(organization), params: {
+          organization: {
+            plan:                    "pro",
+            plan_status:             "active",
+            current_period_ends_at:  fecha.to_s
+          }
+        }
+        organization.reload
+        expect(organization.plan).to eq("pro")
+        expect(organization.plan_status).to eq("active")
+        expect(organization.current_period_ends_at).to eq(fecha)
+        expect(response).to redirect_to(admin_organization_path(organization))
+      end
+
+      it "actualiza trial_ends_at" do
+        fecha = 365.days.from_now.to_date
+        patch admin_organization_path(organization), params: {
+          organization: { plan_status: "trialing", trial_ends_at: fecha.to_s }
+        }
+        organization.reload
+        expect(organization.plan_status).to eq("trialing")
+        expect(organization.trial_ends_at).to eq(fecha)
       end
     end
   end

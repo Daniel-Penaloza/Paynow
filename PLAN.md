@@ -196,7 +196,7 @@ Receipt
 - [ ] Exportación de reportes (CSV/Excel)
   - [x] Vista detallada de ingresos por período (Hoy / Semana / Mes / Año) con tabla de comprobantes verificados
   - [x] Botón "Exportar a Excel" en cada vista detallada → descarga `.xlsx` con: fecha, pagador, banco, referencia, monto
-- [ ] Planes / suscripción por organización (monetización)
+- [ ] Planes / suscripción por organización (monetización) → ver Fase 6
 
 ### Fase 5 — Pruebas con RSpec
 - [x] Setup de RSpec + FactoryBot + Shoulda Matchers
@@ -221,9 +221,54 @@ Receipt
 
 ---
 
+### Fase 6 — Monetización (Planes Básico y Pro)
+
+#### Base de datos
+- [ ] Migración: agregar `plan` (enum: `free | basic | pro`, default `free`) a `Organization`
+- [ ] Migración: agregar `plan_status` (enum: `trialing | active | inactive`, default `trialing`) a `Organization`
+- [ ] Migración: agregar `trial_ends_at` (date) y `current_period_ends_at` (date) a `Organization`
+
+#### Modelo
+- [ ] Validaciones y scopes en `Organization`: `on_trial?`, `plan_active?`, `within_business_limit?`, `within_receipt_limit?`
+- [ ] Límites por plan:
+  - `free` / `trialing`: 1 negocio, 50 comprobantes/mes (período de prueba 14 días)
+  - `basic`: 1 negocio, 500 comprobantes/mes
+  - `pro`: 5 negocios, comprobantes ilimitados
+
+#### Enforcement (restricciones en controllers)
+- [ ] `Dashboard::BusinessesController#create` — bloquear si se excede el límite de negocios del plan
+- [ ] `Public::PaymentsController#submit_receipt` — bloquear si se excede el límite mensual de comprobantes
+- [ ] Mensaje de error claro con invitación a hacer upgrade
+
+#### Panel de administración
+- [ ] `Admin::OrganizationsController` — poder asignar plan y fechas manualmente (para onboarding manual inicial)
+- [ ] Vista `show` de organización muestra plan actual, uso del mes (negocios activos, comprobantes del período)
+
+#### Dashboard del Business Owner
+- [ ] Widget de uso en el overview: "X de 500 comprobantes usados este mes" con barra de progreso
+- [ ] Banner de aviso cuando quede < 20% de cuota disponible
+- [ ] Banner de trial: "Tu período de prueba termina en X días — elige un plan"
+- [ ] Página `/dashboard/subscription` con resumen del plan actual y botón de upgrade
+
+#### Cobro con Stripe
+- [ ] Instalar gem `stripe` y configurar webhook endpoint `POST /webhooks/stripe`
+- [ ] Crear productos y precios en Stripe: Básico ($199 MXN/mes), Pro ($349 MXN/mes)
+- [ ] Stripe Checkout: al hacer clic en "Upgrade" redirige a sesión de pago alojada por Stripe
+- [ ] Webhook `customer.subscription.updated` / `invoice.paid` / `invoice.payment_failed` actualiza `plan`, `plan_status` y `current_period_ends_at` en `Organization`
+- [ ] Soporte para OXXO Pay (método de pago muy usado en México, disponible en Stripe)
+- [ ] Email de confirmación de pago (Action Mailer)
+
+#### Facturación México (CFDI)
+- [ ] Integración con Facturapi (API mexicana de timbrado CFDI) o Billpocket
+- [ ] Emitir CFDI automáticamente tras cada pago exitoso de Stripe
+- [ ] Enviar XML + PDF por correo al cliente
+
+---
+
 ## Próximos pasos (siguiente sesión)
 
-1. **Deploy en Fly.io** — configurar variables de entorno (`ANTHROPIC_API_KEY`, `TWILIO_*`, `SECRET_KEY_BASE`, base de datos en producción).
+1. **Fase 6 — Monetización**: empezar por base de datos + modelo + enforcement (sin Stripe aún — primero las restricciones funcionan, luego el cobro).
+2. **Deploy en Fly.io** — configurar variables de entorno (`ANTHROPIC_API_KEY`, `TWILIO_*`, `SECRET_KEY_BASE`, base de datos en producción).
 
 ---
 
@@ -240,3 +285,61 @@ Receipt
 - La landing page de pago vive en el subdominio de la organización
 - Rails necesita configuración de `config.hosts` y routing por subdominio
 - En desarrollo se usará `org.lvh.me` (resuelve a localhost sin tocar /etc/hosts)
+
+---
+
+## Plan de monetización
+
+### Costo por comprobante procesado
+
+| Componente | USD | MXN (≈$17.5) |
+|---|---|---|
+| Claude Haiku visión (~640 tokens entrada + 100 salida) | $0.0011 | $0.02 |
+| Twilio WhatsApp (3 mensajes: inbound + confirmación + resultado) | $0.0150 | $0.26 |
+| **Total por comprobante** | **$0.016** | **$0.28** |
+
+> Twilio domina el costo variable. Claude es prácticamente gratuito a esta escala.
+
+### Costos fijos mensuales (plataforma)
+
+| Concepto | USD/mes | MXN/mes |
+|---|---|---|
+| Fly.io (Rails app + Postgres + 5 GB storage) | $15 | $263 |
+| Claude Pro × 3 devs (mantenimiento) | $60 | — (gasto del equipo, no de la empresa) |
+
+### Planes
+
+**Plan Básico — $199 MXN/mes** *(+ IVA = $231 MXN)*
+- 1 negocio
+- Hasta 500 comprobantes/mes
+- WhatsApp incluido
+- Dashboard + exportación Excel
+
+**Plan Pro — $349 MXN/mes** *(+ IVA = $405 MXN)*
+- Hasta 5 negocios
+- Comprobantes ilimitados
+- Todo lo del Básico
+
+### Proyección de rentabilidad (70% Básico / 30% Pro, ~300 comp/mes promedio)
+
+| Clientes | Ingreso bruto | Costos var + fijos | Neto post-ISR (~20%) |
+|---|---|---|---|
+| 10 | $2,440 MXN | $1,110 MXN | $1,064 MXN |
+| 25 | $6,025 MXN | $2,381 MXN | $2,915 MXN |
+| 50 | $12,200 MXN | $4,499 MXN | $6,161 MXN |
+| 100 | $24,400 MXN | $8,736 MXN | $12,531 MXN |
+| 200 | $48,800 MXN | $17,210 MXN | $25,272 MXN |
+
+> Con **25-30 clientes** el producto ya cubre infraestructura y genera utilidad.
+> Objetivo año 1: **50 negocios** (taquerías, abarrotes, cafeterías, mercados).
+
+### Consideraciones fiscales México
+
+- **Régimen recomendado**: RESICO si ingresos anuales < $3.5M MXN — tasa ISR del 1% al 2.5% sobre ingresos brutos
+- **IVA**: Cobrar 16% adicional. El cliente lo paga, se declara mensualmente al SAT
+- **CFDI**: Emitir factura por cada cobro de suscripción
+- **Estructura legal**: Evaluar persona moral (SA de CV) vs personas físicas independientes según escala
+
+### Palanca de reducción de costos a futuro
+
+El mayor costo variable es Twilio ($0.015/comprobante). Migrar a **Meta WhatsApp Business API directa** reduce ese costo a ~$0.002/mensaje, bajando el costo variable por comprobante de $0.28 a ~$0.06 MXN. Recomendable cuando superes los 200 clientes.

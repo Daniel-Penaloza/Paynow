@@ -23,6 +23,13 @@
     </div>
   </div>
 
+  <%# ── Widget de uso ──────────────────────────────── %>
+  <%= render "dashboard/shared/usage_widget",
+        organization:      @organization,
+        monthly_receipts:  @monthly_receipts,
+        receipt_limit:     @receipt_limit,
+        business_limit:    @business_limit %>
+
   <%# ── Negocios ────────────────────────────────────── %>
   <section>
     <div class="flex items-center justify-between mb-4">

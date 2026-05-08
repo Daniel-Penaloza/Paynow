@@ -96,5 +96,18 @@ RSpec.describe "Public::Payments", type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
+
+    context "cuando la organización alcanzó el límite mensual de comprobantes" do
+      it "devuelve 422 con mensaje de límite y no crea el comprobante" do
+        create_list(:receipt, 50, business: business, created_at: Date.current.beginning_of_month + 1.hour)
+
+        expect {
+          post submit_receipt_path(business.slug), params: params_validos
+        }.not_to change(Receipt, :count)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("límite mensual de comprobantes")
+      end
+    end
   end
 end

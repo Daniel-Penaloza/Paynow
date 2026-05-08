@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   # Business Owner — zona autogestionable
   namespace :dashboard do
     root "overview#index"
+    resource :subscription, only: %i[show]
     resources :businesses do
       resources :receipts, only: %i[index show] do
         post :reprocess, on: :member

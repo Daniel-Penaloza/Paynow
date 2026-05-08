@@ -94,8 +94,22 @@ RSpec.describe "Dashboard::Businesses", type: :request do
           post dashboard_businesses_path, params: params_invalidos
         }.not_to change(Business, :count)
 
-        # 422 Unprocessable Entity es el status estándar para validaciones fallidas
         expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "cuando la organización alcanzó el límite de negocios del plan" do
+      it "redirige con alerta y no crea el negocio" do
+        # El usuario ya tiene un negocio (plan free = límite 1)
+        business
+
+        expect {
+          post dashboard_businesses_path, params: params_validos
+        }.not_to change(Business, :count)
+
+        expect(response).to redirect_to(new_dashboard_business_path)
+        follow_redirect!
+        expect(response.body).to include("límite de negocios")
       end
     end
   end

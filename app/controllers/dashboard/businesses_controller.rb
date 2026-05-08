@@ -14,6 +14,11 @@ class Dashboard::BusinessesController < Dashboard::BaseController
   end
 
   def create
+    unless Current.user.organization.within_business_limit?
+      return redirect_to new_dashboard_business_path,
+        alert: "Has alcanzado el límite de negocios de tu plan. Contacta a soporte para hacer upgrade."
+    end
+
     @business = Current.user.businesses.build(business_params)
     if @business.save
       redirect_to dashboard_business_path(@business), notice: "Negocio creado correctamente."
