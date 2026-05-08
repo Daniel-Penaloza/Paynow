@@ -11,14 +11,13 @@
   </div>
 
   <%# QR con fondo blanco para que sea escaneable %>
+  <%# El SVG se sirve como data URI (imagen) — nunca se inyecta como HTML %>
+  <% qr_svg = @qr.as_svg(offset: 0, color: "000", shape_rendering: "crispEdges",
+                          module_size: 6, standalone: true) %>
   <div class="bg-white rounded-2xl p-8 inline-block shadow-[0_0_0_1px_rgba(255,255,255,0.08)]">
-    <%= @qr.as_svg(
-          offset: 0,
-          color: "000",
-          shape_rendering: "crispEdges",
-          module_size: 6,
-          standalone: true
-        ).html_safe %>
+    <img src="data:image/svg+xml;base64,<%= Base64.strict_encode64(qr_svg) %>"
+         alt="Código QR de pago para <%= @business.name %>"
+         width="216" height="216">
   </div>
 
   <%# Info de pago %>
