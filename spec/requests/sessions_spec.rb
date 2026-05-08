@@ -4,12 +4,10 @@ require "rails_helper"
 # Son el tipo de spec preferido en Rails moderno (sustituyen a controller specs).
 # Aquí verificamos el flujo de autenticación: login, logout, redirecciones.
 RSpec.describe "Sessions", type: :request do
-
   let(:user) { create(:user) }
 
   # ─── GET /session/new — formulario de login ──────────────────────────────────
   describe "GET /session/new" do
-
     context "cuando el usuario NO está autenticado" do
       it "devuelve 200 y muestra el formulario" do
         get new_session_path
@@ -31,7 +29,6 @@ RSpec.describe "Sessions", type: :request do
 
   # ─── POST /session — crear sesión (login) ────────────────────────────────────
   describe "POST /session" do
-
     context "con credenciales válidas" do
       it "redirige al dashboard" do
         post session_path, params: { email_address: user.email_address, password: "password123" }
@@ -62,7 +59,6 @@ RSpec.describe "Sessions", type: :request do
 
   # ─── DELETE /session — cerrar sesión (logout) ────────────────────────────────
   describe "DELETE /session" do
-
     before { sign_in(user) }
 
     it "redirige al formulario de login" do

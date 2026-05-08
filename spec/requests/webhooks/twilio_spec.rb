@@ -6,7 +6,6 @@ require "rails_helper"
 #   - Twilio::REST::Client#messages#create  → evitar llamadas reales de WhatsApp
 #   - Net::HTTP (download_media)            → evitar HTTP al descargar el archivo adjunto
 RSpec.describe "Webhooks::Twilio", type: :request do
-
   let(:business) { create(:business) }
 
   # Helpers para stubar las dos dependencias de red ─────────────────────────────

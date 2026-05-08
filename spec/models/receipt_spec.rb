@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe Receipt, type: :model do
-
   # Desactivamos los callbacks de after_create_commit para los specs de modelo.
   # Razón: enqueue_verification llamaría al job real (Claude API) y
   # broadcast_to_dashboard intentaría usar ActionCable — ambos fuera de scope aquí.

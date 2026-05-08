@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe Organization, type: :model do
-
   # ─── Asociaciones ────────────────────────────────────────────────────────────
   describe "asociaciones" do
     it { is_expected.to have_many(:users).dependent(:destroy) }
@@ -223,5 +222,4 @@ RSpec.describe Organization, type: :model do
       end
     end
   end
-
 end

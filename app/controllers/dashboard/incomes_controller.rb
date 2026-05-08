@@ -8,11 +8,11 @@ class Dashboard::IncomesController < Dashboard::BaseController
 
     @receipts = @business.receipts.verified
     @receipts = case @period
-                when "today"      then @receipts.today
-                when "this_week"  then @receipts.this_week
-                when "this_month" then @receipts.this_month
-                when "this_year"  then @receipts.this_year
-                end
+    when "today"      then @receipts.today
+    when "this_week"  then @receipts.this_week
+    when "this_month" then @receipts.this_month
+    when "this_year"  then @receipts.this_year
+    end
 
     @receipts = @receipts.order(Arel.sql("COALESCE(transfer_date, submitted_at::date) DESC, submitted_at DESC"))
     @total_amount = @receipts.total_amount

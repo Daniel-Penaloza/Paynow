@@ -6,7 +6,6 @@ require "rails_helper"
 #   2. Usa subdomain routing: la organización se resuelve desde request.subdomain
 #      → en los specs usamos `host!` para simular el subdominio correcto
 RSpec.describe "Public::Payments", type: :request do
-
   let(:organization) { create(:organization) }
   let(:user)         { create(:user, organization: organization) }
   let(:business)     { create(:business, user: user) }
@@ -17,7 +16,6 @@ RSpec.describe "Public::Payments", type: :request do
 
   # ─── GET /:slug — página de pago ─────────────────────────────────────────────
   describe "GET /:slug" do
-
     context "cuando la organización y el negocio existen" do
       it "devuelve 200" do
         get pay_path(business.slug)
@@ -50,7 +48,6 @@ RSpec.describe "Public::Payments", type: :request do
 
   # ─── POST /:slug/receipt — enviar comprobante ─────────────────────────────────
   describe "POST /:slug/receipt" do
-
     # Silenciamos callbacks externos para no llamar a Claude ni a Twilio
     before do
       allow_any_instance_of(Receipt).to receive(:enqueue_verification)

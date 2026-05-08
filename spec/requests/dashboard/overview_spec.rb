@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe "Dashboard::Overview", type: :request do
-
   let(:user)     { create(:user) }
   let(:business) { create(:business, user: user) }
 
@@ -24,7 +23,6 @@ RSpec.describe "Dashboard::Overview", type: :request do
 
   # ─── GET /dashboard ───────────────────────────────────────────────────────────
   describe "GET /dashboard" do
-
     it "devuelve 200" do
       get dashboard_root_path
       expect(response).to have_http_status(:ok)
@@ -39,7 +37,6 @@ RSpec.describe "Dashboard::Overview", type: :request do
 
   # ─── Widget de uso ───────────────────────────────────────────────────────────
   describe "widget de uso" do
-
     it "muestra el plan de la organización" do
       get dashboard_root_path
       expect(response.body).to include("Uso del plan")
@@ -97,5 +94,4 @@ RSpec.describe "Dashboard::Overview", type: :request do
       end
     end
   end
-
 end

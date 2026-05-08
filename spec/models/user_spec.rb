@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe User, type: :model do
-
   # ─── Asociaciones ────────────────────────────────────────────────────────────
   describe "asociaciones" do
     # belong_to(:organization).optional falla con business_owner porque las validaciones

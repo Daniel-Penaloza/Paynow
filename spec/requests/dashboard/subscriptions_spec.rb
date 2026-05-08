@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe "Dashboard::Subscriptions", type: :request do
-
   let(:user)     { create(:user) }
   let(:business) { create(:business, user: user) }
 
@@ -24,7 +23,6 @@ RSpec.describe "Dashboard::Subscriptions", type: :request do
 
   # ─── GET /dashboard/subscription ─────────────────────────────────────────────
   describe "GET /dashboard/subscription" do
-
     it "devuelve 200" do
       get dashboard_subscription_path
       expect(response).to have_http_status(:ok)
@@ -92,7 +90,6 @@ RSpec.describe "Dashboard::Subscriptions", type: :request do
 
   # ─── Banner de trial en el layout ────────────────────────────────────────────
   describe "banner de trial" do
-
     context "cuando la organización está en trial vigente" do
       before do
         user.organization.update!(plan_status: "trialing",
@@ -138,5 +135,4 @@ RSpec.describe "Dashboard::Subscriptions", type: :request do
       end
     end
   end
-
 end

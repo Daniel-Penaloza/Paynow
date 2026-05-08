@@ -10,7 +10,6 @@ require "rails_helper"
 # Driver: rack_test (sin JS, suficiente para el formulario de subida)
 # Subdomain: se simula via Capybara.app_host = "http://org.lvh.me"
 RSpec.describe "Flujo de pago público", type: :system do
-
   let(:organization) { create(:organization) }
   let(:user)         { create(:user, organization: organization) }
   let(:business)     { create(:business, user: user) }
@@ -22,7 +21,6 @@ RSpec.describe "Flujo de pago público", type: :system do
 
   # ─── Landing page de pago ─────────────────────────────────────────────────
   describe "landing page" do
-
     it "muestra el nombre del negocio y la CLABE" do
       visit pay_path(business.slug)
 
@@ -51,7 +49,6 @@ RSpec.describe "Flujo de pago público", type: :system do
 
   # ─── Subida de comprobante ────────────────────────────────────────────────
   describe "subir comprobante" do
-
     let(:fixture_path) { Rails.root.join("spec/fixtures/files/sample_receipt.jpg") }
 
     context "con archivo adjunto" do

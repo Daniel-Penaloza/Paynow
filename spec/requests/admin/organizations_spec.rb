@@ -6,7 +6,6 @@ require "rails_helper"
 #   2. Acceso denegado a business_owners → redirige al dashboard (no son super_admin)
 #   3. Respuestas HTTP correctas para cada acción cuando el super_admin está autenticado
 RSpec.describe "Admin::Organizations", type: :request do
-
   let(:super_admin)  { create(:user, :super_admin) }
   let(:organization) { create(:organization) }
 
@@ -37,7 +36,6 @@ RSpec.describe "Admin::Organizations", type: :request do
 
   # ─── GET /admin/organizations — índice ───────────────────────────────────────
   describe "GET /admin/organizations" do
-
     it "devuelve 200" do
       get admin_organizations_path
       expect(response).to have_http_status(:ok)
@@ -52,7 +50,6 @@ RSpec.describe "Admin::Organizations", type: :request do
 
   # ─── GET /admin/organizations/new ────────────────────────────────────────────
   describe "GET /admin/organizations/new" do
-
     it "devuelve 200" do
       get new_admin_organization_path
       expect(response).to have_http_status(:ok)
@@ -61,7 +58,6 @@ RSpec.describe "Admin::Organizations", type: :request do
 
   # ─── POST /admin/organizations ───────────────────────────────────────────────
   describe "POST /admin/organizations" do
-
     let(:params_validos) do
       { organization: { name: "Tacos El Güero", subdomain: "tacos-el-guero" } }
     end
@@ -91,7 +87,6 @@ RSpec.describe "Admin::Organizations", type: :request do
 
   # ─── GET /admin/organizations/:id — detalle ──────────────────────────────────
   describe "GET /admin/organizations/:id" do
-
     it "devuelve 200 y muestra la organización" do
       get admin_organization_path(organization)
       expect(response).to have_http_status(:ok)
@@ -119,7 +114,6 @@ RSpec.describe "Admin::Organizations", type: :request do
 
   # ─── GET /admin/organizations/:id/edit ───────────────────────────────────────
   describe "GET /admin/organizations/:id/edit" do
-
     it "devuelve 200" do
       get edit_admin_organization_path(organization)
       expect(response).to have_http_status(:ok)
@@ -128,7 +122,6 @@ RSpec.describe "Admin::Organizations", type: :request do
 
   # ─── PATCH /admin/organizations/:id ──────────────────────────────────────────
   describe "PATCH /admin/organizations/:id" do
-
     context "con datos válidos" do
       it "actualiza la organización y redirige al show" do
         patch admin_organization_path(organization), params: {
@@ -179,7 +172,6 @@ RSpec.describe "Admin::Organizations", type: :request do
 
   # ─── DELETE /admin/organizations/:id ─────────────────────────────────────────
   describe "DELETE /admin/organizations/:id" do
-
     it "elimina la organización y redirige al índice" do
       organization
 
