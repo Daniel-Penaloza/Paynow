@@ -219,6 +219,13 @@ Receipt
 - [x] Pruebas end-to-end desde celular vía ngrok (ruta `/dev/pay/:org_subdomain/:slug`)
 - [ ] Deploy en Fly.io
 
+### WhatsApp Business — número aprobado para producción
+> El Twilio Sandbox exige que cada número se una manualmente cada 72 horas (`join <keyword>`). Esto desaparece con un número aprobado por Meta.
+- [ ] Solicitar número de WhatsApp Business en Twilio: **Messaging → Senders → WhatsApp senders**
+- [ ] Completar verificación de negocio con Meta (nombre, sitio web, categoría) — tarda 1-3 días hábiles
+- [ ] Actualizar `TWILIO_WHATSAPP_NUMBER` en Fly.io con el nuevo número aprobado (`whatsapp:+52...`)
+- [ ] Probar flujo completo en producción: cliente envía comprobante → verificación → notificación de respuesta
+
 ---
 
 ### Fase 6 — Monetización (Planes Básico y Pro)
