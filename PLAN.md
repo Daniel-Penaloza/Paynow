@@ -263,12 +263,182 @@ Receipt
 - [ ] Emitir CFDI automáticamente tras cada pago exitoso de Stripe
 - [ ] Enviar XML + PDF por correo al cliente
 
+### Fase 7 — Recibos en efectivo
+
+**Objetivo:** permitir al dueño del negocio registrar ingresos en efectivo (sin comprobante bancario), para que la contabilidad refleje la realidad total del negocio, no solo las transferencias.
+
+**Investigación pendiente:**
+- Definir el flujo de captura: ¿el dueño los registra manualmente desde el dashboard? ¿Puede el cliente generar un "recibo de efectivo" desde la landing page?
+- Decidir si se usan los mismos modelos (`Receipt`) con un `payment_method: cash` o se crea un modelo separado
+- Ver si aplica verificación automática (Claude Vision con foto de billete/conteo) o si es puramente manual
+
+**Tareas (por definir tras investigación):**
+- [ ] Migración: agregar `payment_method` (enum: `transfer | cash`) a `Receipt`
+- [ ] Formulario en dashboard para captura manual: monto, fecha, concepto, pagador opcional
+- [ ] Excluir recibos en efectivo del flujo de verificación automática por Claude
+- [ ] Incluir efectivo en totales de contabilidad (Hoy / Semana / Mes / Año)
+- [ ] Exportación Excel: columna adicional para distinguir transferencia vs efectivo
+- [ ] Recibo imprimible / PDF para el cliente que pagó en efectivo
+
+---
+
+### Fase 8 — Integración contable con Alegra (u otro SaaS)
+
+**Objetivo:** sincronizar los ingresos verificados de PayNow con un software contable externo (Alegra es popular en México/LATAM) para llevar libros formales sin doble captura.
+
+**Investigación pendiente:**
+- Revisar API de Alegra: endpoints de facturas, pagos recibidos, contactos — evaluar si permite crear ingresos directamente
+- Alternativas: Contpaqi, Aspel COI, QuickBooks, Zoho Books — comparar disponibilidad de API y precio
+- Definir el modelo de sincronización: ¿push en tiempo real tras verificación? ¿batch diario/semanal? ¿manual desde dashboard?
+- Qué campos de PayNow mapean a qué campos de Alegra (monto, fecha, banco, referencia, pagador)
+
+**Tareas (por definir tras investigación):**
+- [ ] Evaluar y elegir software contable destino + obtener credenciales API
+- [ ] Crear servicio `AccountingSyncService` que empuje ingresos verificados al software elegido
+- [ ] Llamar al servicio desde `ReceiptVerificationJob` tras status `verified`
+- [ ] Guardar en `Receipt` el ID externo de la transacción creada en el software contable
+- [ ] UI: indicador de sincronización en la tarjeta del comprobante (sincronizado / pendiente / error)
+- [ ] Manejo de errores y reintento en caso de fallo de la API externa
+
+---
+
+### Fase 9 — Flujo bidireccional: Ingresos y Egresos
+
+**Objetivo:** que PayNow registre no solo lo que entra (clientes que pagan) sino también lo que sale (renta, proveedores, nómina, servicios), dando al dueño una vista real de su flujo de caja.
+
+**Investigación pendiente:**
+- Definir modelo de Egreso: ¿modelo propio `Expense` o extensión de `Receipt` con un tipo `expense`?
+- Categorías de egresos: renta, servicios (luz, agua, internet), proveedores, nómina, otros
+- Flujo de captura: formulario manual + opción de subir comprobante de pago (CFDI del proveedor, foto de recibo)
+- Verificación con Claude: ¿aplica extraer datos de CFDIs o comprobantes de pago a proveedores?
+- Periodicidad y recurrencia: ¿egresos fijos mensuales (renta) se pueden marcar como recurrentes?
+
+**Tareas (por definir tras investigación):**
+- [ ] Migración: crear modelo `Expense` (business, amount_cents, expense_date, category, description, payment_method, verification_status)
+- [ ] CRUD de egresos desde dashboard del negocio
+- [ ] Soporte para adjuntar comprobante (CFDI XML o imagen)
+- [ ] Extracción automática de datos de CFDIs con Claude Vision (RFC, monto, concepto, fecha)
+- [ ] Vista de flujo de caja: ingresos vs egresos por período con saldo neto
+- [ ] Egresos recurrentes: marcar como recurrente con frecuencia mensual/semanal
+- [ ] Exportación Excel con hoja de ingresos y hoja de egresos separadas
+
+---
+
+### Fase 10 — Preparación para declaración de impuestos
+
+**Objetivo:** generar los reportes y resúmenes que el contador o el propio dueño necesita para presentar su declaración mensual/anual ante el SAT.
+
+**Investigación pendiente:**
+- Qué régimen fiscal usa el cliente tipo (RESICO, RIF, Personas Físicas con Actividad Empresarial)
+- Qué información exige el SAT por régimen: ingresos brutos, deducciones autorizadas, IVA trasladado/acreditable
+- Si aplica integrar con el SAT directamente (Buzón Tributario, CFDI de ingresos) o solo generar el resumen para que el contador lo use
+- Validar si los CFDIs de egresos de proveedores capturados en Fase 9 se pueden usar como deducciones
+- Evaluar integración con Facturapi o PAC para emitir CFDIs de ingresos propios
+
+**Tareas (por definir tras investigación):**
+- [ ] Reporte mensual de ingresos: tabla con todos los ingresos verificados, subtotal, IVA (si aplica), total
+- [ ] Reporte mensual de egresos deducibles: tabla con egresos con CFDI válido, subtotal, IVA acreditable
+- [ ] Resumen fiscal mensual: ingresos − egresos deducibles = base gravable estimada
+- [ ] Exportación del resumen fiscal en Excel/PDF, organizado por mes
+- [ ] Vista de historial de declaraciones (meses anteriores archivados)
+- [ ] (Avanzado) Emisión de CFDI de ingresos propios vía Facturapi para clientes que requieran factura
+
+---
+
+### Fase 11 — Auditoría de vistas (bug scan)
+
+**Objetivo:** revisar sistemáticamente todas las vistas de la aplicación para detectar bugs visuales, inconsistencias de estado, casos borde y regresiones antes del lanzamiento en producción.
+
+**Áreas a revisar:**
+- [ ] Landing page pública de pago: responsive mobile, estados de error en subida de comprobante, mensajes de confirmación
+- [ ] Dashboard del Business Owner: filtros de período, rango de fechas, tarjetas de contabilidad, badges de status en tiempo real
+- [ ] Vista `show` de comprobante: todos los campos extraídos, botón de reprocess, estado `unreadable`
+- [ ] Vistas de ingresos por período: tabla, totales, botón de exportación Excel
+- [ ] CRUD de negocios: validaciones de formulario, generación de QR, edición/borrado
+- [ ] Panel Admin: CRUD de organizaciones y usuarios, asignación de planes
+- [ ] Clientes frecuentes: agrupación, ordenamiento, links desde dashboard
+- [ ] Flujo WhatsApp: mensajes de confirmación, mensajes de error, casos sin negocio encontrado
+- [ ] Responsive general: todas las vistas en móvil (< 375px, 390px, 430px)
+- [ ] Dark mode / accesibilidad básica (contraste, tamaño de fuente en móvil)
+
+---
+
+### Fase 12 — Ambientes Dev y Producción separados
+
+**Objetivo:** tener un flujo claro y reproducible entre desarrollo local, staging (opcional) y producción en Fly.io, evitando que pruebas contaminen datos reales.
+
+**Investigación pendiente:**
+- Confirmar configuración actual de Fly.io (`fly.toml`, secrets, base de datos en Tigris vs Fly Postgres)
+- Evaluar si se necesita un ambiente de staging separado en Fly.io o si es suficiente dev local + producción
+- Revisar variables de entorno que difieren entre dev y prod (Twilio sandbox vs número real, API keys, dominio)
+- Definir estrategia de seeds y datos de prueba que no mezclen con datos reales
+
+**Tareas (por definir tras investigación):**
+- [ ] Documentar todas las variables de entorno requeridas por ambiente (`.env.example` actualizado)
+- [ ] Configurar `config/environments/production.rb` con settings adecuados (log level, cache, force SSL)
+- [ ] Secrets en Fly.io verificados y completos: `ANTHROPIC_API_KEY`, `TWILIO_*`, `SECRET_KEY_BASE`, `APP_DOMAIN`
+- [ ] Script de seeds de producción separado de seeds de desarrollo (no crear usuarios demo en prod)
+- [ ] Health check endpoint (`GET /up`) funcionando en producción
+- [ ] (Opcional) App de staging separada en Fly.io para probar cambios antes de subir a prod
+- [ ] CI/CD: GitHub Actions que corra los specs antes de hacer deploy automático a prod
+- [ ] Runbook de deploy: pasos verificados de `flyctl deploy`, migraciones, rollback
+
+### Fase 13 — Revisión de deuda técnica
+
+**Objetivo:** auditar el código existente para identificar y corregir problemas de calidad, inconsistencias y decisiones apresuradas tomadas durante el desarrollo rápido del MVP.
+
+**Áreas a revisar:**
+
+#### Controladores
+- [ ] Verificar que ningún controlador tenga lógica de negocio — extraer a servicios/modelos si la hay
+- [ ] Revisar filtros de autenticación y autorización en cada namespace (`before_action`, `authenticate_user!`)
+- [ ] Detectar acciones repetidas entre controladores similares (DRY)
+- [ ] Revisar manejo de errores: rescues genéricos, respuestas 404/422/500 consistentes
+- [ ] Validar que todos los parámetros estén en `strong_parameters` y que no haya mass-assignment inseguro
+
+#### Modelos
+- [ ] Revisar validaciones: ¿cubren todos los casos borde? ¿hay validaciones duplicadas en el controlador?
+- [ ] Revisar scopes: ¿están nombrados de forma consistente? ¿hay consultas N+1 ocultas en scopes?
+- [ ] Callbacks (`before_save`, `after_create_commit`, etc.): ¿son necesarios todos? ¿alguno tiene side effects no obvios?
+- [ ] Revisar asociaciones: `dependent: :destroy` donde corresponde, índices en claves foráneas
+- [ ] Confirmar que `amount_cents` nunca se expone sin el helper `amount` — buscar usos directos en vistas
+
+#### Servicios y jobs
+- [ ] `ReceiptVerificationJob`: manejo de errores si Claude API falla o responde malformado
+- [ ] `WhatsappReplyJob`: ¿qué pasa si Twilio devuelve error? ¿hay retry configurado?
+- [ ] Revisar si hay lógica de negocio duplicada entre jobs y modelos
+- [ ] Confirmar que los jobs son idempotentes (si se ejecutan dos veces no corrompen datos)
+
+#### Base de datos
+- [ ] Revisar `schema.rb`: índices faltantes en columnas usadas en `WHERE` o `JOIN` frecuentes
+- [ ] Columnas con `null: false` donde el dato siempre debe existir
+- [ ] Revisar si hay migraciones con `change` que deberían ser `up/down` para ser reversibles
+
+#### Vistas y helpers
+- [ ] Eliminar HTML/lógica repetida — extraer a partials o helpers
+- [ ] Revisar que no haya lógica de negocio en vistas (`.erb`)
+- [ ] Confirmar que todos los Turbo Streams tienen `target` y `action` correctos y no hay race conditions visuales
+- [ ] Revisar helpers en `ApplicationHelper`: ¿están probados? ¿son reutilizables?
+
+#### Seguridad
+- [ ] Correr `bin/brakeman` y resolver todos los warnings de severidad media o alta
+- [ ] Revisar que las rutas públicas (`Public::`, `Webhooks::`) no expongan datos privados
+- [ ] Confirmar que el webhook de Twilio valida la firma de la petición (no acepta requests de terceros)
+- [ ] Revisar `config/initializers`: no hay secrets hardcodeados, se leen desde `ENV`
+
+#### Pruebas
+- [ ] Identificar modelos, servicios o flujos sin cobertura de specs
+- [ ] Revisar specs que usen `allow_any_instance_of` o mocks frágiles — reemplazar por factories o stubs más robustos
+- [ ] Confirmar que los system specs corren sin flakiness en CI
+
 ---
 
 ## Próximos pasos (siguiente sesión)
 
 1. **Fase 6 — Monetización**: empezar por base de datos + modelo + enforcement (sin Stripe aún — primero las restricciones funcionan, luego el cobro).
 2. **Deploy en Fly.io** — configurar variables de entorno (`ANTHROPIC_API_KEY`, `TWILIO_*`, `SECRET_KEY_BASE`, base de datos en producción).
+3. **Fase 11 — Auditoría de vistas** — hacer el bug scan completo antes del primer deploy a producción.
+4. **Fase 12 — Ambientes Dev/Prod** — resolver el deploy a Fly.io de forma definitiva.
 
 ---
 
