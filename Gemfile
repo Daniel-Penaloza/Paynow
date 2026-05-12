@@ -48,6 +48,9 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
 
+# Active Storage con Tigris (S3-compatible) en producción
+gem "aws-sdk-s3", require: false
+
 # Anthropic Claude API para extracción de datos de comprobantes
 gem "anthropic", "~> 0.4"
 
@@ -90,3 +93,5 @@ group :test do
   # Matchers expresivos para modelos y controladores
   gem "shoulda-matchers"
 end
+
+gem "dockerfile-rails", ">= 1.7", group: :development
