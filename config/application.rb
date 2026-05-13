@@ -25,5 +25,7 @@ module PayNow
     #
     config.time_zone = "Mexico City"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    config.exceptions_app = routes
   end
 end
