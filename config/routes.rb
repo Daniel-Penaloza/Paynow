@@ -50,4 +50,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   root "sessions#new"
+
+  match "/404",  to: "errors#not_found", via: :all
+  match "*path", to: "errors#not_found", via: :all
 end
