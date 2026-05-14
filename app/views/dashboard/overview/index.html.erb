@@ -23,12 +23,12 @@
     </div>
   </div>
 
-  <%# ── Widget de uso ──────────────────────────────── %>
-  <%= render "dashboard/shared/usage_widget",
-        organization:      @organization,
-        monthly_receipts:  @monthly_receipts,
-        receipt_limit:     @receipt_limit,
-        business_limit:    @business_limit %>
+  <%# MONETIZATION DISABLED — descomentar para mostrar widget de uso del plan %>
+  <%# <%= render "dashboard/shared/usage_widget",
+  <%#       organization:      @organization,
+  <%#       monthly_receipts:  @monthly_receipts,
+  <%#       receipt_limit:     @receipt_limit,
+  <%#       business_limit:    @business_limit %> %>
 
   <%# ── Negocios ────────────────────────────────────── %>
   <section>

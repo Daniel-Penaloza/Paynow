@@ -383,6 +383,55 @@ Receipt
 - [ ] CI/CD: GitHub Actions que corra los specs antes de hacer deploy automático a prod
 - [ ] Runbook de deploy: pasos verificados de `flyctl deploy`, migraciones, rollback
 
+### Fase 14 — Seguridad QR ⚡ PRIORIDAD
+
+**Objetivo:** investigar todos los vectores de ataque aplicables a los códigos QR de PayNow y agregar las mitigaciones necesarias para proteger al negocio y al cliente final.
+
+**Investigación pendiente:**
+
+- **QR hijacking / sustitución física** — un atacante pega su propio QR encima del del negocio, redirigiendo pagos a una CLABE diferente. Mitigaciones: ¿watermark en el QR? ¿incluir nombre del negocio visible en la imagen impresa? ¿sello de autenticidad?
+- **Man-in-the-middle en la URL** — el QR apunta a `http://` o un dominio no verificado. Mitigaciones: forzar HTTPS en todas las rutas, HSTS, certificado wildcard para subdominios.
+- **QR dinámico vs estático** — si el QR es estático (URL fija), no hay forma de invalidarlo si se compromete. Investigar si conviene rotación periódica o QR con token de sesión corta.
+- **Open redirect** — la landing page podría ser usada para redirigir a usuarios a sitios maliciosos si algún parámetro no está sanitizado.
+- **Phishing del QR** — alguien genera una página idéntica con una CLABE diferente. Mitigaciones: mostrar dominio de forma prominente, instrucciones al cliente de verificar URL.
+- **Rate limiting en subida de comprobantes** — sin límite, un atacante puede hacer flood de comprobantes falsos al negocio. Mitigaciones: rate limit por IP en `Public::PaymentsController#submit_receipt`.
+- **Enumeración de slugs** — los slugs de negocio son predecibles? Revisar si la ruta pública expone información sensible de otros negocios.
+- **Validación de firma Twilio** — confirmar que el webhook rechaza requests que no vengan de Twilio (replay attacks).
+
+**Tareas (por definir tras investigación):**
+
+- [ ] Investigar y documentar los vectores relevantes para este tipo de app (QR para pagos)
+- [ ] Forzar HTTPS + HSTS en producción (Fly.io ya lo hace, confirmar configuración)
+- [ ] Revisar que slugs de negocios no sean predecibles ni exponer datos de otros negocios
+- [ ] Agregar rate limiting en `Public::PaymentsController#submit_receipt`
+- [ ] Confirmar validación de firma en `Webhooks::TwilioController`
+- [ ] Revisar open redirects y sanitización de parámetros en rutas públicas
+- [ ] Agregar nombre del negocio y dominio visible en la imagen del QR impresa (prevención de sustitución física)
+- [ ] Evaluar si conviene QR con token de corta duración o si el QR estático es suficiente con las otras mitigaciones
+- [ ] Documentar recomendaciones de uso físico para el dueño del negocio (cómo detectar si alguien cambió el QR)
+
+---
+
+### Fase 15 — Deshabilitar monetización (temporal) ⚡ PRIORIDAD
+
+**Objetivo:** comentar o desactivar todo el código relacionado con planes de cobro (Fase 6) para que la app funcione sin restricciones de uso mientras no se quiere cobrar a los clientes.
+
+**Alcance:**
+
+- Enforcement en controladores: `Dashboard::BusinessesController#create` (límite de negocios) y `Public::PaymentsController#submit_receipt` (límite de comprobantes)
+- Modelos: métodos `on_trial?`, `plan_active?`, `within_business_limit?`, `within_receipt_limit?` en `Organization`
+- Vistas: banners de trial, widget de uso, página `/dashboard/subscription`
+- Cualquier referencia a Stripe o cobros activos
+
+**Tareas:**
+
+- [ ] Identificar todos los archivos con lógica de enforcement de planes
+- [ ] Comentar o condicionarlos con una constante `MONETIZATION_ENABLED = false`
+- [ ] Confirmar que el flujo completo funciona sin restricciones tras el cambio
+- [ ] Agregar nota en CLAUDE.md indicando que la monetización está deshabilitada intencionalmente
+
+---
+
 ### Fase 13 — Revisión de deuda técnica
 
 **Objetivo:** auditar el código existente para identificar y corregir problemas de calidad, inconsistencias y decisiones apresuradas tomadas durante el desarrollo rápido del MVP.
@@ -435,10 +484,11 @@ Receipt
 
 ## Próximos pasos (siguiente sesión)
 
-1. **Fase 6 — Monetización**: empezar por base de datos + modelo + enforcement (sin Stripe aún — primero las restricciones funcionan, luego el cobro).
-2. **Deploy en Fly.io** — configurar variables de entorno (`ANTHROPIC_API_KEY`, `TWILIO_*`, `SECRET_KEY_BASE`, base de datos en producción).
-3. **Fase 11 — Auditoría de vistas** — hacer el bug scan completo antes del primer deploy a producción.
-4. **Fase 12 — Ambientes Dev/Prod** — resolver el deploy a Fly.io de forma definitiva.
+1. **[PRIORIDAD] Fase 14 — Seguridad QR** — investigar vectores de ataque sobre los QR generados (MITM, QR hijacking, sustitución física, etc.) y agregar las mitigaciones necesarias.
+2. **[PRIORIDAD] Deshabilitar monetización** — comentar o desactivar todo el código relacionado con cobros/planes (Fase 6) para que la app funcione sin restricciones mientras no se quiere cobrar.
+3. **Fase 13 — Revisión de deuda técnica** — auditar calidad, seguridad y consistencia del código existente.
+4. **Fase 11 — Auditoría de vistas** — bug scan completo de todas las vistas.
+5. **Fase 12 — Ambientes Dev/Prod** — resolver el flujo de deploy a Fly.io de forma definitiva.
 
 ---
 

@@ -58,24 +58,20 @@
       </div>
     </div>
 
-    <%# Uso del mes %>
-    <% receipt_limit = Organization::PLAN_LIMITS[@organization.plan][:receipts_per_month] %>
-    <% business_limit = Organization::PLAN_LIMITS[@organization.plan][:businesses] %>
+    <%# MONETIZATION DISABLED — uso del mes (descomentar cuando PLAN_LIMITS esté activo) %>
+    <%# <% receipt_limit = Organization::PLAN_LIMITS[@organization.plan][:receipts_per_month] %>
+    <%# <% business_limit = Organization::PLAN_LIMITS[@organization.plan][:businesses] %>
     <div class="grid grid-cols-2 gap-4 pt-2 border-t border-[#1e2d45]">
       <div>
         <p class="text-[11px] font-bold tracking-[0.06em] uppercase text-slate-500 mb-1">Negocios</p>
         <p class="text-slate-100 font-semibold">
-          <%= @businesses_count %> / <%= business_limit %>
+          <%= @businesses_count %>
         </p>
       </div>
       <div>
         <p class="text-[11px] font-bold tracking-[0.06em] uppercase text-slate-500 mb-1">Comprobantes este mes</p>
         <p class="text-slate-100 font-semibold">
-          <% if receipt_limit == Float::INFINITY %>
-            <%= @monthly_receipts %> / ∞
-          <% else %>
-            <%= @monthly_receipts %> / <%= receipt_limit %>
-          <% end %>
+          <%= @monthly_receipts %>
         </p>
       </div>
     </div>

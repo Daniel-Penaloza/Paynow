@@ -10,12 +10,13 @@ class Public::PaymentsController < ActionController::Base
   end
 
   def submit_receipt
-    unless @organization.within_receipt_limit?
-      @submit_path  = build_submit_path
-      @whatsapp_url = build_whatsapp_url
-      flash.now[:alert] = "Este negocio ha alcanzado su límite mensual de comprobantes."
-      return render :show, status: :unprocessable_entity
-    end
+    # MONETIZATION DISABLED — descomentar para reactivar límite mensual de comprobantes
+    # unless @organization.within_receipt_limit?
+    #   @submit_path  = build_submit_path
+    #   @whatsapp_url = build_whatsapp_url
+    #   flash.now[:alert] = "Este negocio ha alcanzado su límite mensual de comprobantes."
+    #   return render :show, status: :unprocessable_entity
+    # end
 
     @receipt = @business.receipts.build(receipt_params.merge(submitted_at: Time.current))
     @receipt.file.attach(params[:file])

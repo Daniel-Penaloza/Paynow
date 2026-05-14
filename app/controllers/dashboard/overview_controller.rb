@@ -8,12 +8,13 @@ class Dashboard::OverviewController < Dashboard::BaseController
     @total_receipts       = Receipt.where(business: @businesses).count
     @today_receipts_count = Receipt.where(business: @businesses).today.count
 
-    @monthly_receipts = Receipt
-      .where(business: @businesses)
-      .where(created_at: Date.current.beginning_of_month..)
-      .count
-    @receipt_limit  = Organization::PLAN_LIMITS[@organization.plan][:receipts_per_month]
-    @business_limit = Organization::PLAN_LIMITS[@organization.plan][:businesses]
+    # MONETIZATION DISABLED — descomentar para reactivar el usage widget
+    # @monthly_receipts = Receipt
+    #   .where(business: @businesses)
+    #   .where(created_at: Date.current.beginning_of_month..)
+    #   .count
+    # @receipt_limit  = Organization::PLAN_LIMITS[@organization.plan][:receipts_per_month]
+    # @business_limit = Organization::PLAN_LIMITS[@organization.plan][:businesses]
 
     per_page = PER_PAGE_OPTIONS.include?(params[:per_page].to_i) ? params[:per_page].to_i : 10
 
