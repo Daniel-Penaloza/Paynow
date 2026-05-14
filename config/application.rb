@@ -27,5 +27,9 @@ module PayNow
     # config.eager_load_paths << Rails.root.join("extras")
 
     config.exceptions_app = routes
+
+    # X-Frame-Options: DENY — la app no debe embeberse en iframes (previene clickjacking).
+    # Rails pone SAMEORIGIN por defecto; DENY es más estricto y correcto para PayNow.
+    config.action_dispatch.default_headers["X-Frame-Options"] = "DENY"
   end
 end
