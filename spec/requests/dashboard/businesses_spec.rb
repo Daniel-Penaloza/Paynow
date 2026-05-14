@@ -94,7 +94,8 @@ RSpec.describe "Dashboard::Businesses", type: :request do
       end
     end
 
-    context "cuando la organización alcanzó el límite de negocios del plan" do
+    # MONETIZATION DISABLED: enforcement de límite de negocios comentado en el controlador
+    xcontext "cuando la organización alcanzó el límite de negocios del plan" do
       it "redirige con alerta y no crea el negocio" do
         # El usuario ya tiene un negocio (plan free = límite 1)
         business

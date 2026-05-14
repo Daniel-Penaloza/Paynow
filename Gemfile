@@ -57,6 +57,9 @@ gem "twilio-ruby", "~> 7.0"
 # Exportación a Excel
 gem "caxlsx_rails"
 
+# Rate limiting — protección contra flood en rutas públicas
+gem "rack-attack"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"

@@ -94,7 +94,8 @@ RSpec.describe "Public::Payments", type: :request do
       end
     end
 
-    context "cuando la organización alcanzó el límite mensual de comprobantes" do
+    # MONETIZATION DISABLED: enforcement de límite mensual de comprobantes comentado en el controlador
+    xcontext "cuando la organización alcanzó el límite mensual de comprobantes" do
       it "devuelve 422 con mensaje de límite y no crea el comprobante" do
         create_list(:receipt, 50, business: business, created_at: Date.current.beginning_of_month + 1.hour)
 

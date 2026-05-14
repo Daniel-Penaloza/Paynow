@@ -22,7 +22,8 @@ RSpec.describe "Dashboard::Subscriptions", type: :request do
   end
 
   # ─── GET /dashboard/subscription ─────────────────────────────────────────────
-  describe "GET /dashboard/subscription" do
+  # MONETIZATION DISABLED: página de suscripción deshabilitada mientras los planes están deshabilitados
+  xdescribe "GET /dashboard/subscription" do
     it "devuelve 200" do
       get dashboard_subscription_path
       expect(response).to have_http_status(:ok)
@@ -90,7 +91,8 @@ RSpec.describe "Dashboard::Subscriptions", type: :request do
 
   # ─── Banner de trial en el layout ────────────────────────────────────────────
   describe "banner de trial" do
-    context "cuando la organización está en trial vigente" do
+    # MONETIZATION DISABLED: banner de trial eliminado del layout
+    xcontext "cuando la organización está en trial vigente" do
       before do
         user.organization.update!(plan_status: "trialing",
                                   trial_ends_at: 10.days.from_now.to_date)
@@ -104,7 +106,8 @@ RSpec.describe "Dashboard::Subscriptions", type: :request do
       end
     end
 
-    context "cuando el trial expira hoy" do
+    # MONETIZATION DISABLED: banner de trial eliminado del layout
+    xcontext "cuando el trial expira hoy" do
       before do
         user.organization.update!(plan_status: "trialing",
                                   trial_ends_at: Date.current)

@@ -36,7 +36,8 @@ RSpec.describe "Dashboard::Overview", type: :request do
   end
 
   # ─── Widget de uso ───────────────────────────────────────────────────────────
-  describe "widget de uso" do
+  # MONETIZATION DISABLED: widget de uso eliminado de la vista mientras los planes están deshabilitados
+  xdescribe "widget de uso" do
     it "muestra el plan de la organización" do
       get dashboard_root_path
       expect(response.body).to include("Uso del plan")

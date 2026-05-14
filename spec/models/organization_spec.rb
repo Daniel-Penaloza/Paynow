@@ -19,13 +19,15 @@ RSpec.describe Organization, type: :model do
       expect(duplicado.errors[:subdomain]).to be_present
     end
 
-    it "rechaza plan inválido" do
+    # MONETIZATION DISABLED: validación de plan comentada en el modelo
+    xit "rechaza plan inválido" do
       org = build(:organization, plan: "enterprise")
       expect(org).not_to be_valid
       expect(org.errors[:plan]).to be_present
     end
 
-    it "rechaza plan_status inválido" do
+    # MONETIZATION DISABLED: validación de plan_status comentada en el modelo
+    xit "rechaza plan_status inválido" do
       org = build(:organization, plan_status: "suspended")
       expect(org).not_to be_valid
       expect(org.errors[:plan_status]).to be_present
@@ -58,7 +60,8 @@ RSpec.describe Organization, type: :model do
       expect(org.plan_status).to eq("trialing")
     end
 
-    it "asigna trial_ends_at a 365 días al crear" do
+    # MONETIZATION DISABLED: before_create :set_trial_end_date comentado en el modelo
+    xit "asigna trial_ends_at a 365 días al crear" do
       org = create(:organization, plan_status: "trialing", trial_ends_at: nil)
       expect(org.trial_ends_at).to eq(365.days.from_now.to_date)
     end
@@ -105,8 +108,9 @@ RSpec.describe Organization, type: :model do
   end
 
   # ─── on_trial? ───────────────────────────────────────────────────────────────
+  # MONETIZATION DISABLED: on_trial? siempre retorna false mientras la monetización está deshabilitada
   describe "#on_trial?" do
-    it "devuelve true si plan_status es trialing y trial_ends_at es futuro" do
+    xit "devuelve true si plan_status es trialing y trial_ends_at es futuro" do
       org = build(:organization, :trialing)
       expect(org.on_trial?).to be true
     end
@@ -121,7 +125,7 @@ RSpec.describe Organization, type: :model do
       expect(org.on_trial?).to be false
     end
 
-    it "devuelve true si trial_ends_at es hoy" do
+    xit "devuelve true si trial_ends_at es hoy" do
       org = build(:organization, plan_status: "trialing", trial_ends_at: Date.current)
       expect(org.on_trial?).to be true
     end
@@ -133,6 +137,7 @@ RSpec.describe Organization, type: :model do
   end
 
   # ─── plan_active? ────────────────────────────────────────────────────────────
+  # MONETIZATION DISABLED: plan_active? siempre retorna true mientras la monetización está deshabilitada
   describe "#plan_active?" do
     it "devuelve true si plan_status es active" do
       org = build(:organization, plan_status: "active")
@@ -144,18 +149,19 @@ RSpec.describe Organization, type: :model do
       expect(org.plan_active?).to be true
     end
 
-    it "devuelve false si el trial expiró" do
+    xit "devuelve false si el trial expiró" do
       org = build(:organization, :trial_expired)
       expect(org.plan_active?).to be false
     end
 
-    it "devuelve false si plan_status es inactive" do
+    xit "devuelve false si plan_status es inactive" do
       org = build(:organization, :inactive)
       expect(org.plan_active?).to be false
     end
   end
 
   # ─── within_business_limit? ──────────────────────────────────────────────────
+  # MONETIZATION DISABLED: within_business_limit? siempre retorna true
   describe "#within_business_limit?" do
     context "plan free (límite 1 negocio)" do
       it "devuelve true cuando no tiene negocios" do
@@ -163,7 +169,7 @@ RSpec.describe Organization, type: :model do
         expect(org.within_business_limit?).to be true
       end
 
-      it "devuelve false cuando ya alcanzó el límite" do
+      xit "devuelve false cuando ya alcanzó el límite" do
         user = create(:user, :business_owner)
         org  = user.organization
         create(:business, user: user)
@@ -180,7 +186,7 @@ RSpec.describe Organization, type: :model do
         expect(org.within_business_limit?).to be true
       end
 
-      it "devuelve false con 5 negocios" do
+      xit "devuelve false con 5 negocios" do
         user = create(:user, :business_owner)
         org  = user.organization
         org.update!(plan: "pro")
@@ -191,6 +197,7 @@ RSpec.describe Organization, type: :model do
   end
 
   # ─── within_receipt_limit? ───────────────────────────────────────────────────
+  # MONETIZATION DISABLED: within_receipt_limit? siempre retorna true
   describe "#within_receipt_limit?" do
     context "plan pro (ilimitado)" do
       it "siempre devuelve true" do
@@ -205,7 +212,7 @@ RSpec.describe Organization, type: :model do
         expect(org.within_receipt_limit?).to be true
       end
 
-      it "devuelve false cuando se alcanzó el límite mensual" do
+      xit "devuelve false cuando se alcanzó el límite mensual" do
         user     = create(:user, :business_owner)
         org      = user.organization
         business = create(:business, user: user)
